@@ -2,8 +2,13 @@
 .vs/
 Engine/binaries/objs_int/
 
+Engine/3rdPartyLibs/GLFW/*
+Engine/3rdPartyLibs/glad_OpenGL/*
+Engine/3rdPartyLibs/spdlog/*
+Engine/3rdPartyLibs/imgui/*
+
 #GLFW
-Engine/3rdPartyLibs/GLFW/
+!Engine/3rdPartyLibs/GLFW/
 !Engine/3rdPartyLibs/GLFW/src/
 !Engine/3rdPartyLibs/GLFW/include/
 !Engine/3rdPartyLibs/GLFW/deps/
@@ -11,24 +16,24 @@ Engine/3rdPartyLibs/GLFW/
 !Engine/3rdPartyLibs/GLFW/premake5.lua
 
 #Glad
-Engine/3rdPartyLibs/glad_OpenGL/
+!Engine/3rdPartyLibs/glad_OpenGL/
 !Engine/3rdPartyLibs/glad_OpenGL/src/
 !Engine/3rdPartyLibs/glad_OpenGL/include/
 !Engine/3rdPartyLibs/glad_OpenGL/premake5.lua
 
 #spdlog
-Engine/3rdPartyLibs/spdlog/
+!Engine/3rdPartyLibs/spdlog/
 !Engine/3rdPartyLibs/spdlog/src/
 !Engine/3rdPartyLibs/spdlog/include/
 !Engine/3rdPartyLibs/spdlog/LICENSE
 !Engine/3rdPartyLibs/spdlog/premake5.lua
 
 #imgui
-Engine/3rdPartyLibs/imgui/
+!Engine/3rdPartyLibs/imgui/
 !Engine/3rdPartyLibs/imgui/src/
 !Engine/3rdPartyLibs/imgui/misc/
 !Engine/3rdPartyLibs/imgui/premake5.lua
-!!Engine/3rdPartyLibs/imgui/LICENSE.txt
+!Engine/3rdPartyLibs/imgui/LICENSE.txt
 
 #Glm
 Engine/3rdPartyLibs/Glm/doc/

@@ -46,17 +46,17 @@ namespace ARB {
 		glShaderSource(cObj, 1, &cShaderCode, NULL);
 		glCompileShader(cObj);
 
-		int success = checkStatus(cObj, "Compute");
-		if (!success) {
+		int shader_success = checkStatus(cObj, "Compute");
+		if (!shader_success) {
 			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
 		}
 
 		ID = glCreateProgram();
 		glAttachShader(ID, cObj);
 		glLinkProgram(ID);
-		success = checkStatus(ID, "Program");
+		int prog_success = checkStatus(ID, "Program");
 
-		if (success)
+		if (prog_success && prog_success)
 			shaderLogger->logger->info("Compute Shader {0} Shader Program is successfully created with Shader {1}", shaderName, cShaderPath);
 		else
 			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
@@ -124,7 +124,7 @@ namespace ARB {
 		success = checkStatus(ID, "Program");
 
 		if (success)
-			shaderLogger->logger->info("Compute Shader {0} Shader Program is successfully recompiled", shaderName);
+			shaderLogger->logger->info("Compute Shader {0} Shader Program is successfully recompiled having shader {1}", shaderName, cShaderPath);
 		else
 			shaderLogger->logger->error("Unable to recompile {0} Shader Program", shaderName);
 
