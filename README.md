@@ -14,5 +14,6 @@ Linux or any other OS:-
  You can build with some other library as well like CMAKE. Refer to the premake files from the individual library directory to see the configurations and include folder.
 
 # Future plans
+->Making more pre-implimented functions like a random value generation function or some other pre-implimented variables
 ->Will allow user to set a non-empty image2D on the window and apply various effects to it
 ->Suuport of multiple image2D variables(empty or non-empty)
