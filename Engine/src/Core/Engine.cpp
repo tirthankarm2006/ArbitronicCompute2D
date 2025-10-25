@@ -1,6 +1,5 @@
 #include "ARBpch.h"
 #include "Engine.h"
-#include "Logging/My_Struct_Sink.h"
 
 namespace ARB {
 	void Engine::runEditor() {
@@ -54,16 +53,16 @@ namespace ARB {
 				cShaderName = std::string(temp_cShaderName);
 
 			    if (cShaderPath == "") {
-				    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Empty Shader Path");
+				    ImGui::TextColored(UI_YELLOW, "Empty Shader Path");
 			    }
 				if (cShaderName == "") {
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Empty Shader Name");
+					ImGui::TextColored(UI_YELLOW, "Empty Shader Name");
 				}
 
 				//Optional Use of custom shader for rendering
 				ImGui::Checkbox("Use Custom Shader for rendering", &useCustomShader);
 				if(useCustomShader){
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0, 1.0f), "Custom Shader will require certain variables. See documentation to learn more");
+					ImGui::TextColored(UI_YELLOW, "Custom Shader will require certain variables. See documentation to learn more");
 					ImGui::Text("Vertex Shader File Path:");
 					ImGui::InputText("##vshaderPath", &temp_userVShaderPath[0], 500);
 					ImGui::Text("Fragment Shader File Path:");
@@ -71,17 +70,17 @@ namespace ARB {
 					userVShaderPath = std::string(temp_userVShaderPath);
 					userFShaderPath = std::string(temp_userFShaderPath);
 					if (userVShaderPath == "") {
-						ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Empty Vertex Shader Path");
+						ImGui::TextColored(UI_YELLOW, "Empty Vertex Shader Path");
 					}
 					if (userFShaderPath == "") {
-						ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Empty Fragment Shader Path");
+						ImGui::TextColored(UI_YELLOW, "Empty Fragment Shader Path");
 					}
 				}
 				else
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0, 1.0f), "Not giving custom shader will make engine to use it's default shader(Recommended)");
+					ImGui::TextColored(UI_YELLOW, "Not giving custom shader will make engine to use it's default shader(Recommended)");
 
 				//Initialize Shader Button
-				if (ImGui::Button("Initialize Shader", ImVec2(150, 20))) {
+				if (ImGui::Button("Initialize Shader", UI_BUTTON_SIZE)) {
 					if (cShaderPath != "" && cShaderName != "") {
 						if (!shaderCompiledOnce) {
 							cShader1->InitShader(cShaderPath, cShaderName);
@@ -104,7 +103,7 @@ namespace ARB {
 					}
 				}
 
-				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0, 1.0f), "Make sure you have put a correct shader path");
+				ImGui::TextColored(UI_YELLOW, "Make sure you have put a correct shader path");
 				inspector1->endFrame();
 				Editor::UIBackend::RenderAllWindows();
 				appWindow->endUpdate();
@@ -112,7 +111,7 @@ namespace ARB {
 				continue;
 			}
 			else {
-				if (ImGui::Button("Set New Shader", ImVec2(150, 20))) {
+				if (ImGui::Button("Set New Shader", UI_BUTTON_SIZE)) {
 					setShaderFirst = false;
 					initValue_WorkGrp_Invoc_Size_Once = false;
 				}
@@ -121,23 +120,23 @@ namespace ARB {
 			//Setting Work group Size and Invocation size per work group
 			ImGui::InputInt3(":Work Group Size", &workGroupSize[0]);
 
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0, 1.0f), "Window width = Work Group Size X * Invocation Size X");
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0, 1.0f), "Window height = Work Group Size Y * Invocation Size Y");
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0, 1.0f), "To fully apply changes of Invocation Size onto the Window,\n"
+			ImGui::TextColored(UI_YELLOW, "Window width = Work Group Size X * Invocation Size X");
+			ImGui::TextColored(UI_YELLOW, "Window height = Work Group Size Y * Invocation Size Y");
+			ImGui::TextColored(UI_YELLOW, "To fully apply changes of Invocation Size onto the Window,\n"
 				                                              "first recompile shader then reset Compute shader");
 
 			//Checking whether New Work Group Size if applied or not
 			if (prev_workGroupSize.x != workGroupSize.x || prev_workGroupSize.y != workGroupSize.y || prev_workGroupSize.z != workGroupSize.z) {
-				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"Reset Compute Shader to apply changes for Work Group Size");
+				ImGui::TextColored(UI_RED,"Reset Compute Shader to apply changes for Work Group Size");
 			}
 
 			//Checking whether New Invocation Size if applied or not
 			if (invocationSize != cShader1->invocationSize) {
-				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Reset Compute Shader to apply changes for Invocation Size");
+				ImGui::TextColored(UI_RED, "Reset Compute Shader to apply changes for Invocation Size");
 			}
 
 			//Reseting the Window Size/Total parallel threads and reseting the texture size
-			if (ImGui::Button("RESET COMPUTE SHADER", ImVec2(150, 20))) {
+			if (ImGui::Button("RESET COMPUTE SHADER", UI_BUTTON_SIZE)) {
 				prev_workGroupSize = workGroupSize;
 				invocationSize = cShader1->invocationSize;
 				SetupTexture(workGroupSize.x * invocationSize.x, workGroupSize.y * invocationSize.y);
@@ -213,7 +212,7 @@ namespace ARB {
 			}
 
 			//Recompile Button
-			if (ImGui::Button("RECOMPILE", ImVec2(150, 20)))
+			if (ImGui::Button("RECOMPILE", UI_BUTTON_SIZE))
 				cShader1->recompileShader(cShaderPath, cShaderName);
 
 			//FrameTime/FPS values
@@ -226,24 +225,24 @@ namespace ARB {
 
 			//Copying the data into Engine's own terminal Logs vector and deleting the sink's logs
 			//engine's own terminal logs will have the current event data
-			if (sink_terminal->terminalLogs.size()) {
-				terminalLogs.clear();
-				for (int i = 0; i < sink_terminal->terminalLogs.size(); i++) {
-					terminalLogs.push_back(sink_terminal->terminalLogs[i]);
+			if (Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs.size()) {
+				m_terminalLogs.clear();
+				for (int i = 0; i < Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs.size(); i++) {
+					m_terminalLogs.push_back(Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs[i]);
 				}
-				sink_terminal->terminalLogs.clear();
+				Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs.clear();
 			}
 
 			//Pooling all the Terminal Logs onto the terminal
-			for (int i = 0; i < terminalLogs.size(); i++) {
-				if(terminalLogs[i].log_level == spdlog::level::info)
-				   ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), terminalLogs[i].log_msg.c_str());
-				else if(terminalLogs[i].log_level == spdlog::level::err)
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), terminalLogs[i].log_msg.c_str());
-				else if (terminalLogs[i].log_level == spdlog::level::warn)
-					ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.5f, 1.0f), terminalLogs[i].log_msg.c_str());
-				else if (terminalLogs[i].log_level == spdlog::level::trace)
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), terminalLogs[i].log_msg.c_str());
+			for (int i = 0; i < m_terminalLogs.size(); i++) {
+				if(m_terminalLogs[i].log_level == spdlog::level::info)
+				   ImGui::TextColored(UI_GREEN, m_terminalLogs[i].log_msg.c_str());
+				else if(m_terminalLogs[i].log_level == spdlog::level::err)
+					ImGui::TextColored(UI_RED, m_terminalLogs[i].log_msg.c_str());
+				else if (m_terminalLogs[i].log_level == spdlog::level::warn)
+					ImGui::TextColored(UI_YELLOW, m_terminalLogs[i].log_msg.c_str());
+				else if (m_terminalLogs[i].log_level == spdlog::level::trace)
+					ImGui::TextColored(UI_WHITE, m_terminalLogs[i].log_msg.c_str());
 			}
 
 			terminal->endFrame();
@@ -272,19 +271,13 @@ namespace ARB {
 
 		//editorCamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), width, height);
 		appWindow = std::make_shared<Editor::EditorWindow>(width, height, name, xPos, yPos);
-		inspector1 = std::make_shared<Editor::InspectorWindowUI>("Inspector", glm::vec2(1020, -50), glm::vec2(600, 880));
-		terminal = std::make_shared<Editor::InspectorWindowUI>("Terminal", glm::vec2(0, 700), glm::vec2(1000, 200));
+		inspector1 = std::make_shared<Editor::InspectorWindowUI>("Inspector", INSPECTOR_WIN_POS, INSPECTOR_WIN_SIZE);
+		terminal = std::make_shared<Editor::InspectorWindowUI>("Terminal", TERMINAL_WIN_POS, TERMINAL_WIN_SIZE);
 
 		//Initializing Computer Shader Object Pointer to empty constructor
 		cShader1 = std::make_shared<ComputeShader>();
-
 		//Quad Shader Initialization
 		cubeShader = std::make_shared<Shader>("quadShader");//Initially set to default shader system
-
-		//Creating terminal sink and passing it to shader system
-		sink_terminal = std::make_shared<Editor::My_Struct_Sink>();
-		cShader1->push_terminal_sink(sink_terminal);
-		cubeShader->push_terminal_sink(sink_terminal);
 
 		if (Editor::UIBackend::InitiateImguiBackend(appWindow->GetWindowPtr()))
 			editorLogger->logger->info("{0} successfully linked to ImGui", glfwGetWindowTitle(appWindow->GetWindowPtr()));

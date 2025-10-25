@@ -1,6 +1,5 @@
 #include "ARBpch.h"
 #include "ComputeShader.h"
-#include "Logging/My_Struct_Sink.h"
 
 namespace ARB {
 	static bool initParamPtr = false;
@@ -10,7 +9,6 @@ namespace ARB {
 		shaderName = name;
 		initParamPtr = true;
 		m_ComputeCode = "#version 460 core\n"
-		"layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;\n"
 		"layout(rgba32f, binding = 0) uniform image2D imgOutput;\n"
 		"uniform float TIME;\n"
 		"ivec2 UV = ivec2(gl_GlobalInvocationID.xy);\n"
@@ -56,7 +54,7 @@ namespace ARB {
 		glLinkProgram(ID);
 		int prog_success = checkStatus(ID, "Program");
 
-		if (prog_success && prog_success)
+		if (prog_success && shader_success)
 			shaderLogger->logger->info("Compute Shader {0} Shader Program is successfully created with Shader {1}", shaderName, cShaderPath);
 		else
 			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
@@ -223,6 +221,7 @@ namespace ARB {
 		invocationSize = glm::ivec3(1, 1, 1);
 		params = std::make_unique<ShaderParams>();
 		shaderLogger = std::make_shared<Editor::Log>("Engine::Renderer3D::Shader");
+		push_terminal_sink();
 	}
 
 	int ComputeShader::checkStatus(unsigned int obj, std::string type) {

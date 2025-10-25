@@ -1,10 +1,11 @@
 #include "ARBpch.h"
 #include "Shader.h"
-#include "Logging/My_Struct_Sink.h"
+#include "Logging/Terminal_Window_Sink.h"
 
 namespace ARB {
 	Shader::Shader(std::string name) {
 		shaderLogger = std::make_shared<Editor::Log>("Engine::Renderer3D::Shader");
+		push_terminal_sink();
 		shaderName = name;
 
 		const char* vShaderCode = "#version 460 core\n"

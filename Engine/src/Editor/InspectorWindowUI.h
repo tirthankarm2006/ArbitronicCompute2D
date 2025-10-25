@@ -12,7 +12,6 @@ namespace ARB {
 			void ui();
 			void endFrame();
 		private:
-			std::shared_ptr<Editor::Log> inspectorLogger;
 			std::string name;
 			bool setWindowParams = false;
 			glm::vec2 position;

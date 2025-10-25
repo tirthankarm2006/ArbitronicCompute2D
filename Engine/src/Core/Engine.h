@@ -2,13 +2,17 @@
 #include "ARBpch.h"
 #include "EditorWindow.h"
 #include "Logging/EditorLog.h"
-#include "Logging/My_Struct_Sink.h"
+#include "Logging/Terminal_Window_Sink.h"
 #include "InspectorWindowUI.h"
 #include "Shader.h"
 #include "UIBackend.h"
 #include "ComputeShader.h"
 
 namespace ARB {
+#define INSPECTOR_WIN_SIZE glm::vec2(600, 880)
+#define INSPECTOR_WIN_POS glm::vec2(1020, -50)
+#define TERMINAL_WIN_SIZE glm::vec2(1000, 200)
+#define TERMINAL_WIN_POS glm::vec2(0, 700)
 	class Engine
 	{
 	private:
@@ -37,8 +41,7 @@ namespace ARB {
 		std::string cShaderPath, cShaderName;
 		std::string userVShaderPath, userFShaderPath;
 		std::vector<std::string> terminalMsgs;
-		std::shared_ptr<Editor::My_Struct_Sink> sink_terminal;
-		std::vector<Editor::My_Struct_Sink::LogDetail> terminalLogs;
+		std::vector<Editor::Terminal_Window_Sink::LogDetail> m_terminalLogs;
 	public:
 		Engine(unsigned int width = 1280, unsigned int height = 720, char* name = "Editor Window", int xPos = 500, int yPos = 500);
 		~Engine();

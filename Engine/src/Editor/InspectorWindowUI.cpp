@@ -4,7 +4,6 @@
 namespace ARB {
 	namespace Editor {
 		InspectorWindowUI::InspectorWindowUI(const char* name, glm::vec2 pos, glm::vec2 size) {
-			inspectorLogger = std::make_shared<Editor::Log>("Engine::InspectorWindow");
 			this->name = name;
 			position = pos;
 			this->size = size;

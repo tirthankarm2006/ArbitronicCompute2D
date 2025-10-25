@@ -3,6 +3,15 @@
 
 namespace ARB {
 	namespace Editor {
+
+//Colors for the letters
+#define UI_RED ImVec4{1.0f, 0.0f, 0.0f, 1.0f}
+#define UI_GREEN ImVec4{0.0f, 1.0f, 0.0f, 1.0f}
+#define UI_WHITE ImVec4{1.0f, 1.0f, 1.0f, 1.0f}
+#define UI_YELLOW ImVec4{1.0f, 1.0f, 0.0f, 1.0f}
+
+#define UI_BUTTON_SIZE ImVec2(150, 20)
+
 		class UIBackend
 		{
 		public:

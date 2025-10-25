@@ -11,7 +11,7 @@ namespace ARB {
 		void recompile(const char* vShaderPath, const char* fShaderPath, std::string name);
 		void defaultShaderRecompile(std::string name);
 		Shader(std::string name);
-		void push_terminal_sink(std::shared_ptr<Editor::My_Struct_Sink> sink) { shaderLogger->push_terminal_sink(sink); }
+		void push_terminal_sink() { shaderLogger->push_terminal_sink(Editor::Terminal_Window_Sink::Get_Singleton()); }
 		void useShader();
 		void setBoolUniform(const std::string, bool value) const;
 		void setIntUniform(const std::string, int value) const;
