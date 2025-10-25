@@ -11,8 +11,8 @@ namespace ARB{
 			logger->set_pattern("[%n]%^[%l]:  %v%$ [%r]");
 		}
 
-		void Log::push_terminal_sink(std::shared_ptr<Terminal_Window_Sink> sink_terminal) {
-			logger->sinks().push_back(sink_terminal);
+		void Log::push_terminal_sink() {
+			logger->sinks().push_back(Editor::Terminal_Window_Sink::Get_Singleton());
 		}
 	}
 }

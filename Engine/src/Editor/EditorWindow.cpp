@@ -6,6 +6,7 @@ namespace ARB {
 		EditorWindow::EditorWindow(unsigned int width, unsigned int height, char* name, int xpos, int ypos) {
 			mainWindow = std::make_shared<WindowProps>();
 			windowLogger = std::make_shared<Editor::Log>("Engine::EditorWindow");
+			windowLogger->push_terminal_sink();
 
 			if (glfwInit()) {
 				windowLogger->logger->info("GLFW Initiated");
@@ -46,12 +47,14 @@ namespace ARB {
 			}
 			else
 				windowLogger->logger->error("GLAD could not be initiated");
+
 		}
 
 		void EditorWindow::ResetWindowSize(unsigned int width, unsigned int height) {
 			mainWindow->width = width;
 			mainWindow->height = height;
 			glfwSetWindowSize(mainWindow->window, width, height);
+			windowLogger->logger->trace("Window Sized to {0} X {1}", width, height);
 		}
 
 		EditorWindow::~EditorWindow() {

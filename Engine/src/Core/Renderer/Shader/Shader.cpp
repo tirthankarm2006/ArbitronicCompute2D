@@ -1,11 +1,10 @@
 #include "ARBpch.h"
 #include "Shader.h"
-#include "Logging/Terminal_Window_Sink.h"
 
 namespace ARB {
 	Shader::Shader(std::string name) {
-		shaderLogger = std::make_shared<Editor::Log>("Engine::Renderer3D::Shader");
-		push_terminal_sink();
+		shaderLogger = std::make_shared<Editor::Log>("Engine::General_Shader");
+		shaderLogger->push_terminal_sink();
 		shaderName = name;
 
 		const char* vShaderCode = "#version 460 core\n"
@@ -245,6 +244,10 @@ namespace ARB {
 
 	void Shader::useShader() {
 		glUseProgram(ID);
+	}
+
+	void Shader::deleteProgram() {
+		glDeleteProgram(ID);
 	}
 
 	void Shader::setBoolUniform(const std::string name, bool value) const{

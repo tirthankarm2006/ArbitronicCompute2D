@@ -127,22 +127,23 @@ namespace ARB {
 
 			//Checking whether New Work Group Size if applied or not
 			if (prev_workGroupSize.x != workGroupSize.x || prev_workGroupSize.y != workGroupSize.y || prev_workGroupSize.z != workGroupSize.z) {
-				ImGui::TextColored(UI_RED,"Reset Compute Shader to apply changes for Work Group Size");
+				ImGui::TextColored(UI_RED,"Reset Window to apply changes for Work Group Size");
 			}
 
 			//Checking whether New Invocation Size if applied or not
 			if (invocationSize != cShader1->invocationSize) {
-				ImGui::TextColored(UI_RED, "Reset Compute Shader to apply changes for Invocation Size");
+				ImGui::TextColored(UI_RED, "Reset Window to apply changes for Invocation Size");
 			}
 
 			//Reseting the Window Size/Total parallel threads and reseting the texture size
-			if (ImGui::Button("RESET COMPUTE SHADER", UI_BUTTON_SIZE)) {
+			if (ImGui::Button("RESET WINDOW", UI_BUTTON_SIZE)) {
+				Editor::Terminal_Window_Sink::Get_Singleton()->Clear_All_Logs();
 				prev_workGroupSize = workGroupSize;
 				invocationSize = cShader1->invocationSize;
 				SetupTexture(workGroupSize.x * invocationSize.x, workGroupSize.y * invocationSize.y);
 				appWindow->ResetWindowSize(workGroupSize.x * invocationSize.x, workGroupSize.y * invocationSize.y);
-				editorLogger->logger->info("Compute Shader Deployed with new Work Group Size, {0}, {1}, {2}", prev_workGroupSize.x, prev_workGroupSize.y, prev_workGroupSize.z);
-				editorLogger->logger->info("Compute Shader reset with Invocation Size, {0}, {1}, {2}", invocationSize.x, invocationSize.y, invocationSize.z);
+				editorLogger->logger->info("Window has been reset with Work Group Size, {0}, {1}, {2}", prev_workGroupSize.x, prev_workGroupSize.y, prev_workGroupSize.z);
+				editorLogger->logger->info("Window has been reset with Invocation Size, {0}, {1}, {2}", invocationSize.x, invocationSize.y, invocationSize.z);
 			}
 
 			//Settings Pre-defined Uniforms
@@ -212,40 +213,18 @@ namespace ARB {
 			}
 
 			//Recompile Button
-			if (ImGui::Button("RECOMPILE", UI_BUTTON_SIZE))
+			if (ImGui::Button("RECOMPILE", UI_BUTTON_SIZE)) {
+				Editor::Terminal_Window_Sink::Get_Singleton()->Clear_All_Logs();
 				cShader1->recompileShader(cShaderPath, cShaderName);
+			}
 
 			//FrameTime/FPS values
 			ShowFrameData();
 
 			inspector1->endFrame();
 
-			//Terminal Window Beginning frame
-			terminal->createFrame();
-
-			//Copying the data into Engine's own terminal Logs vector and deleting the sink's logs
-			//engine's own terminal logs will have the current event data
-			if (Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs.size()) {
-				m_terminalLogs.clear();
-				for (int i = 0; i < Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs.size(); i++) {
-					m_terminalLogs.push_back(Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs[i]);
-				}
-				Editor::Terminal_Window_Sink::Get_Singleton()->terminalLogs.clear();
-			}
-
-			//Pooling all the Terminal Logs onto the terminal
-			for (int i = 0; i < m_terminalLogs.size(); i++) {
-				if(m_terminalLogs[i].log_level == spdlog::level::info)
-				   ImGui::TextColored(UI_GREEN, m_terminalLogs[i].log_msg.c_str());
-				else if(m_terminalLogs[i].log_level == spdlog::level::err)
-					ImGui::TextColored(UI_RED, m_terminalLogs[i].log_msg.c_str());
-				else if (m_terminalLogs[i].log_level == spdlog::level::warn)
-					ImGui::TextColored(UI_YELLOW, m_terminalLogs[i].log_msg.c_str());
-				else if (m_terminalLogs[i].log_level == spdlog::level::trace)
-					ImGui::TextColored(UI_WHITE, m_terminalLogs[i].log_msg.c_str());
-			}
-
-			terminal->endFrame();
+			//Rendering the terminal window with all messages
+			Render_Ternimal_Window();
 
 			//Dispatching the Compute Data to Computer Shader
 			DispatchCompute();
@@ -261,13 +240,15 @@ namespace ARB {
 
 		DeleteTexture_Buffers();
 		cShader1->DeleteShaderData();
+		cubeShader->deleteProgram();
+		Editor::Terminal_Window_Sink::Get_Singleton()->Clear_All_Logs();
 
 		Editor::UIBackend::ShutdownImguiBackend();
 		appWindow->onWindowClosed();
 	}
 
 	Engine::Engine(unsigned int width, unsigned int height, char* name, int xPos, int yPos) {
-		editorLogger = std::make_unique<Editor::Log>("Engine Core");
+		editorLogger = std::make_unique<Editor::Log>("Engine::Core");
 
 		//editorCamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), width, height);
 		appWindow = std::make_shared<Editor::EditorWindow>(width, height, name, xPos, yPos);
@@ -289,6 +270,23 @@ namespace ARB {
 		Editor::UIBackend::setUITheme();
 
 		editorLogger->logger->info("Editor Initialized");
+	}
+
+	void Engine::Render_Ternimal_Window() {
+		//Terminal Window Beginning frame
+		terminal->createFrame();
+		//Pooling all the Terminal Logs onto the terminal
+		for (int i = 0; i < Editor::Terminal_Window_Sink::Get_Singleton()->Get_Num_Terminal_Log_Msgs(); i++) {
+			if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::info)
+				ImGui::TextColored(UI_GREEN, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
+			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::err)
+				ImGui::TextColored(UI_RED, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
+			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::warn)
+				ImGui::TextColored(UI_YELLOW, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
+			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::trace)
+				ImGui::TextColored(UI_WHITE, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
+		}
+		terminal->endFrame();
 	}
 
 	void Engine::EngineTick() {
@@ -385,7 +383,6 @@ namespace ARB {
 		workGroupSize = glm::ivec3(appWindow->GetWindowWidth(), appWindow->GetWindowHeight(), 1);
 		prev_workGroupSize = workGroupSize;
 		invocationSize = glm::ivec3(1, 1, 1);
-		prev_workInvocationSize = invocationSize;
 	}
 
 	Engine::~Engine() {

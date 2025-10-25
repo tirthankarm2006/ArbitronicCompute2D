@@ -220,8 +220,8 @@ namespace ARB {
 		isCompiled = false;
 		invocationSize = glm::ivec3(1, 1, 1);
 		params = std::make_unique<ShaderParams>();
-		shaderLogger = std::make_shared<Editor::Log>("Engine::Renderer3D::Shader");
-		push_terminal_sink();
+		shaderLogger = std::make_shared<Editor::Log>("Engine::Compute_Shader");
+		shaderLogger->push_terminal_sink();
 	}
 
 	int ComputeShader::checkStatus(unsigned int obj, std::string type) {

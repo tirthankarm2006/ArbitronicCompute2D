@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Logging/EditorLog.h"
-#include "Logging/Terminal_Window_Sink.h"
 
 namespace ARB {
 	class ComputeShader
@@ -10,7 +9,6 @@ namespace ARB {
 		unsigned int ID;
 		std::string shaderName;
 		void InitShader(std::string cShaderPath, std::string name);
-		void push_terminal_sink() { shaderLogger->push_terminal_sink(Editor::Terminal_Window_Sink::Get_Singleton()); }
 		ComputeShader();
 		void useShader();
 		void GetUniformVariablesData();

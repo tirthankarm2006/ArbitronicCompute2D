@@ -13,6 +13,7 @@ namespace ARB {
 #define INSPECTOR_WIN_POS glm::vec2(1020, -50)
 #define TERMINAL_WIN_SIZE glm::vec2(1000, 200)
 #define TERMINAL_WIN_POS glm::vec2(0, 700)
+
 	class Engine
 	{
 	private:
@@ -28,7 +29,7 @@ namespace ARB {
 		std::shared_ptr<ComputeShader> cShader1;
 		unsigned int m_TextureID;
 		glm::ivec3 workGroupSize, prev_workGroupSize;
-		glm::ivec3 invocationSize, prev_workInvocationSize;
+		glm::ivec3 invocationSize;
 		int fcounter;
 		float lastDeltaTime,currentTime;
 		void RenderQuad();
@@ -38,10 +39,10 @@ namespace ARB {
 		void ShowFrameData();
 		void InitValue_WorkGrp_Invoc_Size();
 		void EngineTick();
+		void Render_Ternimal_Window();
 		std::string cShaderPath, cShaderName;
 		std::string userVShaderPath, userFShaderPath;
 		std::vector<std::string> terminalMsgs;
-		std::vector<Editor::Terminal_Window_Sink::LogDetail> m_terminalLogs;
 	public:
 		Engine(unsigned int width = 1280, unsigned int height = 720, char* name = "Editor Window", int xPos = 500, int yPos = 500);
 		~Engine();
