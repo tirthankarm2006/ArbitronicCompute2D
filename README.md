@@ -16,6 +16,8 @@ Linux or any other OS:-
 # Future plans
 ->Adding support more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short
 
+->Removal of the Terminal Assertions in Release build
+
 ->Support of Command Line arguments for running application in Debug and Release explicitly from Command Line
 
 ->Not delete and re-assign the unchanged shader variables when shader is recompiled
