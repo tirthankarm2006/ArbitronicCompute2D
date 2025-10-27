@@ -16,6 +16,8 @@ Linux or any other OS:-
 # Future plans
 ->Adding support more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short
 
+->Uniform variables are to be set according to location and not per name, improves performance
+
 ->Multiple render passes through multiple compute shader passes
 
 ->Removal of the Terminal Assertions in Release build
