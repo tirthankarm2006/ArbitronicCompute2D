@@ -11,7 +11,7 @@ include "Engine/3rdPartyLibs/GLFW"
 include "Engine/3rdPartyLibs/glad_OpenGL"
 include "Engine/3rdPartyLibs/spdlog"
 include "Engine/3rdPartyLibs/imgui"
---include "Engine/3rdPartyLibs/stb"
+include "Engine/3rdPartyLibs/stb"
 
 project "ArbitronicCompute"
     location "Engine"
@@ -59,7 +59,8 @@ project "ArbitronicCompute"
         "GLAD",
         "opengl32.lib",
         "spdlog",
-        "imgui"
+        "imgui",
+        "STB"
     }
 
     filter "system:windows"

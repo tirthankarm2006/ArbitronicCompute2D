@@ -12,6 +12,7 @@ namespace ARB{
 		private:
 			std::shared_ptr<Editor::Log> windowLogger;
 			std::shared_ptr<WindowProps> mainWindow;
+			GLFWimage* windowIcon;
 		public:
 			void processInput();
 			int windowShouldClose();

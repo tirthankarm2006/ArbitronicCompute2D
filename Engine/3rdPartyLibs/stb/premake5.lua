@@ -8,7 +8,7 @@ project "STB"
    files
    {
       "stb_image.cpp",
-	  "stb_image.h"
+	   "stb_image.h"
    }
 
 	filter "system:windows"
