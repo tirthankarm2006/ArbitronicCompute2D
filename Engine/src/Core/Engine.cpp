@@ -33,6 +33,12 @@ namespace ARB {
 		while (!appWindow->windowShouldClose()) {
 			appWindow->processInput();
 			appWindow->startUpdate();
+			if (appWindow->isWindowMinized()) {
+				appWindow->endUpdate();
+				EngineTick();
+				continue;
+			}
+
 			Editor::UIBackend::CreateNewImguiFrame();
 
 			inspector1->createFrame();
@@ -112,6 +118,7 @@ namespace ARB {
 			}
 			else {
 				if (ImGui::Button("Set New Shader", UI_BUTTON_SIZE)) {
+					Editor::Terminal_Window_Sink::Get_Singleton()->Clear_All_Logs();
 					setShaderFirst = false;
 					initValue_WorkGrp_Invoc_Size_Once = false;
 				}
@@ -233,8 +240,8 @@ namespace ARB {
 			RenderQuad();
 
 			Editor::UIBackend::RenderAllWindows();
-			appWindow->endUpdate();
 
+			appWindow->endUpdate();
 			EngineTick();
 		}
 

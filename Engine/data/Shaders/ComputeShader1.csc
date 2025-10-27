@@ -1,4 +1,4 @@
-layout(local_size_x = 10, local_size_y = 10) in;
+layout(local_size_x = 1, local_size_y = 1) in;
 
 ivec2 m_centre = ivec2(500, 400);
 vec3 color1 = vec3(0.6, 0.7, 0.3);

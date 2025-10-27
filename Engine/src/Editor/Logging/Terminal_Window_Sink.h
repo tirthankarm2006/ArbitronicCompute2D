@@ -12,9 +12,9 @@ namespace ARB {
 			}LogDetail;
 			std::vector<LogDetail> terminalLogs;
 		public:
-			static std::shared_ptr<Editor::Terminal_Window_Sink> Get_Singleton();
+			static std::shared_ptr<Editor::Terminal_Window_Sink>& Get_Singleton();
 			void Clear_All_Logs();
-			inline std::string Get_Terminal_Log_Msg(int i) { return terminalLogs[i].log_msg; }
+			inline std::string& Get_Terminal_Log_Msg(int i) { return terminalLogs[i].log_msg; }
 			inline LOG_LEVEL& Get_Terminal_Log_Level(int i) { return terminalLogs[i].log_level; }
 			inline int Get_Num_Terminal_Log_Msgs() { return terminalLogs.size(); }
 		protected:

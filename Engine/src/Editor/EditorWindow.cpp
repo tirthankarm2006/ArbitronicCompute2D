@@ -1,5 +1,6 @@
 #include"ARBpch.h"
 #include "EditorWindow.h"
+#include "UIBackend.h"
 
 namespace ARB {
 	namespace Editor {
@@ -37,6 +38,17 @@ namespace ARB {
 				std::shared_ptr<WindowProps> win = *(std::shared_ptr<WindowProps>*)glfwGetWindowUserPointer(window);
 				win->height = height;
 				win->width = width;	
+			});
+
+			glfwSetWindowIconifyCallback(mainWindow->window, [](GLFWwindow* window, int iconified) {
+				//If the glfw window is iconified, we shutdown the imgui backend and if it is restored, we restore the imgui backend
+				if (iconified == GLFW_TRUE) {
+					UIBackend::ShutdownImguiBackend();
+				}
+				else {
+					UIBackend::InitiateImguiBackend(window);
+					Editor::UIBackend::setUITheme();
+				}
 			});
 
 			glfwSetInputMode(mainWindow->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -78,6 +90,10 @@ namespace ARB {
 
 		void EditorWindow::closeWindow() {
 			glfwSetWindowShouldClose(mainWindow->window, true);
+		}
+
+		bool EditorWindow::isWindowMinized() {
+			return glfwGetWindowAttrib(mainWindow->window, GLFW_ICONIFIED);
 		}
 
 		void EditorWindow::startUpdate() {

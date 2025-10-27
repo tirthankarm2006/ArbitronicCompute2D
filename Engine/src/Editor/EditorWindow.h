@@ -17,17 +17,12 @@ namespace ARB{
 			int windowShouldClose();
 			void onWindowClosed();
 			void startUpdate();
+			bool isWindowMinized();
 			void endUpdate();
 			void ResetWindowSize(unsigned int width, unsigned int height);
-			int GetWindowHeight() {
-				return mainWindow->height;
-			}
-			int GetWindowWidth() {
-				return mainWindow->width;
-			}
-			GLFWwindow* GetWindowPtr() {
-				return mainWindow->window;
-			}
+			inline int GetWindowHeight() { return mainWindow->height; }
+			inline int GetWindowWidth() { return mainWindow->width; }
+			inline GLFWwindow* GetWindowPtr() { return mainWindow->window; }
 			void closeWindow();
 			EditorWindow(unsigned int width, unsigned int height, char* name, int xpos, int ypos);
 			EditorWindow(){}

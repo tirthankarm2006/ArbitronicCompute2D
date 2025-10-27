@@ -3,7 +3,7 @@
 
 namespace ARB {
 	namespace Editor {
-		std::shared_ptr<Editor::Terminal_Window_Sink> Terminal_Window_Sink::Get_Singleton() {
+		std::shared_ptr<Editor::Terminal_Window_Sink>& Terminal_Window_Sink::Get_Singleton() {
 			static std::shared_ptr<Editor::Terminal_Window_Sink> sink_terminal = nullptr;
 			if (sink_terminal == nullptr)
 				sink_terminal = std::make_shared<Editor::Terminal_Window_Sink>();

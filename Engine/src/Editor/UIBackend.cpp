@@ -16,8 +16,9 @@ namespace ARB {
 				ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;// IF using Docking Branch
 				ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;// IF using Docking Branch
 				ImGui_ImplOpenGL3_Init();
-				return ImGui_ImplGlfw_InitForOpenGL(window, true);// Second param install_callback=true will install GLFW callbacks and chain to existing ones.
 				isInit = true;
+
+				return ImGui_ImplGlfw_InitForOpenGL(window, true);// Second param install_callback=true will install GLFW callbacks and chain to existing ones.
 			}
 			else
 				return false;
@@ -48,34 +49,34 @@ namespace ARB {
 		void UIBackend::setUITheme() {
 			auto& colors = ImGui::GetStyle().Colors;
 
-			colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+			colors[ImGuiCol_WindowBg] = IM_WIN_BG_COLOR;
 
 			// Headers
-			colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-			colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-			colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+			colors[ImGuiCol_Header] = IM_WIN_HEADER_COLOR;
+			colors[ImGuiCol_HeaderHovered] = IM_WIN_HEADER_HOVERED_COLOR;
+			colors[ImGuiCol_HeaderActive] = IM_WIN_HEADER_ACTIVE_COLOR;
 
 			// Buttons
-			colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-			colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-			colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+			colors[ImGuiCol_Button] = IM_BUTTON_COLOR;
+			colors[ImGuiCol_ButtonHovered] = IM_BUTTON_HOVERED_COLOR;
+			colors[ImGuiCol_ButtonActive] = IM_BUTTON_ACTIVE_COLOR;
 
 			// Frame BG
-			colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-			colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-			colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+			colors[ImGuiCol_FrameBg] = IM_FRAMEBG_COLOR;
+			colors[ImGuiCol_FrameBgHovered] = IM_FRAMEBG_HOVERED_COLOR;
+			colors[ImGuiCol_FrameBgActive] = IM_FRAMEBG_ACTIVE_COLOR;
 
 			// Tabs
-			colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-			colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
-			colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
-			colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-			colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+			colors[ImGuiCol_Tab] = IM_TAB_COLOR;
+			colors[ImGuiCol_TabHovered] = IM_TAB_HOVERED_COLOR;
+			colors[ImGuiCol_TabActive] = IM_TAB_ACTIVE_COLOR;
+			colors[ImGuiCol_TabUnfocused] = IM_TAB_UNFOCUSED_COLOR;
+			colors[ImGuiCol_TabUnfocusedActive] = IM_TAB_UNFOCUSED_ACTIVE_COLOR;
 
 			// Title
-			colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-			colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f };
-			colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+			colors[ImGuiCol_TitleBg] = IM_TITLEBG_COLOR;
+			colors[ImGuiCol_TitleBgActive] = IM_TITLEBG_ACTIVE_COLOR;
+			colors[ImGuiCol_TitleBgCollapsed] = IM_TITLEBG_HOVERED_COLOR;
 		}
 	}
 }

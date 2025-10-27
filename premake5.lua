@@ -18,7 +18,6 @@ project "ArbitronicCompute"
     kind "ConsoleApp"
     language "C++"
 
-    targetdir ("Engine/binaries/Main")
     objdir    ("Engine/binaries/objs_int")
 
     files{
@@ -74,9 +73,11 @@ project "ArbitronicCompute"
         }
 
     filter "configurations:Debug"
+        targetdir ("Engine/binaries/Main/Debug")
         defines "AB_DEBUG"
         symbols "On"
 
     filter "configurations:Release"
+        targetdir ("Engine/binaries/Main/Release")
         defines "AB_RELEASE"
         optimize "On"
