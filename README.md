@@ -14,10 +14,14 @@ Linux or any other OS:-
  You can build with some other library as well like CMAKE. Refer to the premake files from the individual library directory to see the configurations and include folder.
 
 # Future plans
-->Support for post processing by implementing framebuffers
+->Adding support more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short
+
+->Support of Command Line arguments for running application in Debug and Release explicitly from Command Line
+
+->Not delete and re-assign the unchanged shader variables when shader is recompiled
 
 ->Making more pre-implimented functions like a random value generation function or some other pre-implimented variables
 
 ->Will allow user to set a non-empty image2D on the window and apply various effects to it
 
-->Suuport of multiple image2D variables(empty or non-empty)
+->Suport of multiple image2D variables(empty or non-empty)
