@@ -1,5 +1,5 @@
 # ArbitronicCompute2D
-An C++ Application to play with Compute Shaders to perform some 2D drawings or simulations
+An C++ Application to play with Compute Shaders to perform some 2D and 3D drawings or simulations
 
 # About
 It is a simple application where you can simply play with GLSL compute shader codes that you write. You can create various type of uniform variavles that you can set from the editor, like integer, float, vectors, integer vectors, float vectors. You can also change the work-group size which will change the window size as each pixel corresponds to one work-group. You can create various animations using a pre-defined time variable and other pre-defined variables. You can also provide your own custom Vertex and Fragment shader for rendering(still experimental). Simply create a file and inside write a void function 'Compute' and then what you code inside the function depends on what you want to make and your shader programming skills.
