@@ -7,16 +7,16 @@ namespace ARB {
 		shaderLogger->push_terminal_sink();
 		shaderName = name;
 
-		const char* vShaderCode = "#version 460 core\n"
+		vShaderCode =              "#version 460 core\n"
 			                       "layout(location = 0) in vec3 aPos;\n"
 		                           "layout(location = 1) in vec2 aTexCoords;\n"
-		                           "out vec3 FragPos;\n"//this is the fragment position
-		                           "out vec2 TexCoords;\n"
-		                           "void main(){\n"
+			                       "out vec3 FragPos;\n"//this is the fragment position
+			                       "out vec2 TexCoords;\n"
+			                       "void main(){\n"
 			                       "gl_Position = vec4(aPos, 1.0);\n"//multipying the transformation matrix with the vectors of our vertices
 			                       "TexCoords = aTexCoords; }\n";
 
-		const char* fSHaderCode = "#version 460 core\n"
+		fShaderCode =             "#version 460 core\n"
 			                      "out vec4 FragColor;\n"
 		                          "in vec3 Normal;\n"
 								  "in vec3 FragPos;\n"
@@ -26,89 +26,32 @@ namespace ARB {
 								  "void main() {\n"
 			                      "FragColor = vec4(texture(material.diffuse, TexCoords).xyz, 1.0); }\n";
 
-		unsigned int vObj, fObj;
-
-		vObj = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vObj, 1, &vShaderCode, NULL);
-		glCompileShader(vObj);
-
-		int success = checkStatus(vObj, "Vertex");
-		if (!success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
-			glDeleteShader(vObj);
-			return;
-		}
-
-		fObj = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fObj, 1, &fSHaderCode, NULL);
-		glCompileShader(fObj);
-		success = checkStatus(fObj, "Fragment");
-		if (!success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
-			glDeleteShader(vObj);
-			glDeleteShader(fObj);
-			return;
-		}
-
-		ID = glCreateProgram();
-		glAttachShader(ID, vObj);
-		glAttachShader(ID, fObj);
-		glLinkProgram(ID);
-		success = checkStatus(ID, "Program");
-
-		if (success)
-			shaderLogger->logger->info("{0} Shader Program is successfully created with Default Shaders", shaderName);
-		else {
-			glDeleteShader(vObj);
-			glDeleteShader(fObj);
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
-		}
-
-		glDeleteShader(vObj);
-		glDeleteShader(fObj);
+		deleteProgram();
+		defaultShaderCompile(shaderName);
 	}
 
-	void Shader::defaultShaderRecompile( std::string name) {
-		glDeleteProgram(ID);
-
-		const char* vShaderCode = "#version 460 core/n"
-			"layout(location = 0) in vec3 aPos;/n"
-			"layout(location = 1) in vec2 aTexCoords;/n"
-			"out vec3 FragPos;/n"//this is the fragment position
-			"out vec2 TexCoords;/n"
-			"void main(){/n"
-			"gl_Position = vec4(aPos, 1.0);/n"//multipying the transformation matrix with the vectors of our vertices
-			"TexCoords = aTexCoords; }/n";
-
-		const char* fSHaderCode = "#version 460 core/n"
-			"out vec4 FragColor;/n"
-			"in vec3 Normal;/n"
-			"in vec3 FragPos;/n"
-			"in vec2 TexCoords;/n"
-			"struct Material { sampler2D diffuse; };/n"
-			"uniform Material material;/n"
-			"void main() {/n"
-			"FragColor = vec4(texture(material.diffuse, TexCoords).xyz, 1.0); }/n";
-
+	void Shader::defaultShaderCompile( std::string name) {
 		unsigned int vObj, fObj;
 
 		vObj = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vObj, 1, &vShaderCode, NULL);
+		const char* vertexCodePtr = vShaderCode.c_str();
+		glShaderSource(vObj, 1, &vertexCodePtr, NULL);
 		glCompileShader(vObj);
 
 		int success = checkStatus(vObj, "Vertex");
 		if (!success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
+			shaderLogger->logger->error("Unable to create {0} Shader Object", shaderName);
 			glDeleteShader(vObj);
 			return;
 		}
 
 		fObj = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fObj, 1, &fSHaderCode, NULL);
+		const char* fragCodePtr = fShaderCode.c_str();
+		glShaderSource(fObj, 1, &fragCodePtr, NULL);
 		glCompileShader(fObj);
 		success = checkStatus(fObj, "Fragment");
 		if (!success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
+			shaderLogger->logger->error("Unable to create {0} Shader Object", shaderName);
 			glDeleteShader(vObj);
 			glDeleteShader(fObj);
 			return;
@@ -133,8 +76,8 @@ namespace ARB {
 	}
 
 	void Shader::recompile(const char* vShaderPath, const char* fShaderPath, std::string name) {
-		std::string vertexCode, fragCode;
 		std::ifstream vreadFile, freadFile;
+		name = shaderName;
 		//ensure ifstream objects can throw exceptions:
 		vreadFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try {
@@ -142,7 +85,7 @@ namespace ARB {
 			std::stringstream vShaderStream;
 			vShaderStream << vreadFile.rdbuf();
 			vreadFile.close();
-			vertexCode = vShaderStream.str();
+			new_vShaderCode = vShaderStream.str();
 		}
 		catch (std::ifstream::failure e) {
 			shaderLogger->logger->error("Vertex Shader unable to read");
@@ -156,7 +99,7 @@ namespace ARB {
 			std::stringstream fShaderStream;
 			fShaderStream << freadFile.rdbuf();
 			freadFile.close();
-			fragCode = fShaderStream.str();
+			new_fShaderCode = fShaderStream.str();
 		}
 		catch (std::ifstream::failure e) {
 			shaderLogger->logger->error("Fragment Shader unable to read");
@@ -164,30 +107,30 @@ namespace ARB {
 			return;
 		}
 
-		glDeleteProgram(ID);
-
-		const char* vShaderCode = vertexCode.c_str();
-		const char* fSHaderCode = fragCode.c_str();
+		deleteProgram();
 
 		unsigned int vObj, fObj;
 
 		vObj = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vObj, 1, &vShaderCode, NULL);
+		const char* vertexCodePtr = new_vShaderCode.c_str();
+		glShaderSource(vObj, 1, &vertexCodePtr, NULL);		
 		glCompileShader(vObj);
 
 		int success = checkStatus(vObj, "Vertex");
 		if (!success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
+			shaderLogger->logger->error("Unable to create {0} Shader Object", shaderName);
 			glDeleteShader(vObj);
 			return;
 		}
 
 		fObj = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fObj, 1, &fSHaderCode, NULL);
+		const char* fragCodePtr = fShaderCode.c_str();
+		glShaderSource(fObj, 1, &fragCodePtr, NULL);		
 		glCompileShader(fObj);
+
 		success = checkStatus(fObj, "Fragment");
 		if (!success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
+			shaderLogger->logger->error("Unable to create {0} Shader Object", shaderName);
 			glDeleteShader(vObj);
 			glDeleteShader(fObj);
 			return;
@@ -200,7 +143,7 @@ namespace ARB {
 		success = checkStatus(ID, "Program");
 
 		if (success)
-			shaderLogger->logger->info("{0} Shader Program is successfully created with Shaders {1} and {2}", shaderName, vShaderCode, fSHaderCode);
+			shaderLogger->logger->info("{0} Shader Program is successfully created with Shaders {1} and {2}", shaderName, new_vShaderCode, new_fShaderCode);
 		else {
 			glDeleteShader(vObj);
 			glDeleteShader(fObj);
@@ -250,13 +193,14 @@ namespace ARB {
 		glDeleteProgram(ID);
 	}
 
-	void Shader::setBoolUniform(const std::string name, bool value) const{
+	void Shader::setBoolUniform(const std::string name, bool value) const {
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
-
 	}
 	void Shader::setIntUniform(const std::string name, int value) const {
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
-
+	}
+	void Shader::setUIntUniform(const std::string name, unsigned int value) const {
+		glUniform1ui(glGetUniformLocation(ID, name.c_str()), value);
 	}
 	void Shader::setFloatUniform(const std::string name, float value) const {
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
@@ -266,13 +210,78 @@ namespace ARB {
 	}
 	void Shader::setMatrix3Uniform(const std::string name, glm::mat3 value) const {
 		glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
-
 	}
 	void Shader::setVec3Uniform(const std::string name, glm::vec3 value) const {
 		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
-
 	}
 	void Shader::setVec4Uniform(const std::string name, glm::vec4 value) const {
 		glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setVec2Uniform(const std::string name, glm::vec2 value) const {
+		glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setUIVec3Uniform(const std::string name, glm::uvec3 value) const {
+		glUniform3uiv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setUIVec4Uniform(const std::string name, glm::uvec4 value) const {
+		glUniform4uiv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setUIVec2Uniform(const std::string name, glm::uvec2 value) const {
+		glUniform2uiv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setIVec3Uniform(const std::string name, glm::ivec3 value) const {
+		glUniform3iv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setIVec4Uniform(const std::string name, glm::ivec4 value) const {
+		glUniform4iv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void Shader::setIVec2Uniform(const std::string name, glm::ivec2 value) const {
+		glUniform2iv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+
+	void Shader::setBoolUniform(int location, bool value) const {
+		glUniform1i(location, (int)value);
+	}
+	void Shader::setIntUniform(int location, int value) const {
+		glUniform1i(location, value);
+	}
+	void Shader::setUIntUniform(int location, unsigned int value) const {
+		glUniform1ui(location, value);
+	}
+	void Shader::setFloatUniform(int location, float value) const {
+		glUniform1f(location, value);
+	}
+	void Shader::setMatrix4Uniform(int location, glm::mat4 value) const {
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+	void Shader::setMatrix3Uniform(int location, glm::mat3 value) const {
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+	void Shader::setVec3Uniform(int location, glm::vec3 value) const {
+		glUniform3fv(location, 1, &value[0]);
+	}
+	void Shader::setVec4Uniform(int location, glm::vec4 value) const {
+		glUniform4fv(location, 1, &value[0]);
+	}
+	void Shader::setVec2Uniform(int location, glm::vec2 value) const {
+		glUniform2fv(location, 1, &value[0]);
+	}
+	void Shader::setUIVec3Uniform(int location, glm::uvec3 value) const {
+		glUniform3uiv(location, 1, &value[0]);
+	}
+	void Shader::setUIVec4Uniform(int location, glm::uvec4 value) const {
+		glUniform4uiv(location, 1, &value[0]);
+	}
+	void Shader::setUIVec2Uniform(int location, glm::uvec2 value) const {
+		glUniform2uiv(location, 1, &value[0]);
+	}
+	void Shader::setIVec3Uniform(int location, glm::ivec3 value) const {
+		glUniform3iv(location, 1, &value[0]);
+	}
+	void Shader::setIVec4Uniform(int location, glm::ivec4 value) const {
+		glUniform4iv(location, 1, &value[0]);
+	}
+	void Shader::setIVec2Uniform(int location, glm::ivec2 value) const {
+		glUniform2iv(location, 1, &value[0]);
 	}
 }

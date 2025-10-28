@@ -27,8 +27,8 @@ namespace ARB {
 		SetupDisplayQuad();
 
 		//Setting the cube shader texture sampler
-		cubeShader->useShader();
-		cubeShader->setIntUniform("material.diffuse", 0);
+		quadShader->useShader();
+		quadShader->setIntUniform("material.diffuse", 0);
 
 		while (!appWindow->windowShouldClose()) {
 			appWindow->processInput();
@@ -102,10 +102,10 @@ namespace ARB {
 						setShaderFirst = true;
 					}
 					if (useCustomShader) {
-						cubeShader->recompile(userVShaderPath.c_str(), userFShaderPath.c_str(), "cubeShader");
+						quadShader->recompile(userVShaderPath.c_str(), userFShaderPath.c_str(), "cubeShader");
 						//Setting the cube shader texture sampler
-						cubeShader->useShader();
-						cubeShader->setIntUniform("material.diffuse", 0);
+						quadShader->useShader();
+						quadShader->setIntUniform("material.diffuse", 0);
 					}
 				}
 
@@ -155,65 +155,67 @@ namespace ARB {
 
 			//Settings Pre-defined Uniforms
 			cShader1->useShader();
-			cShader1->setFloatUniform("TIME", currentTime);
-			cubeShader->useShader();
-			cubeShader->setFloatUniform("TIME", currentTime);
+			cShader1->setFloatUniform(0, currentTime);
+
+			//cubeShader->useShader();
+			//cubeShader->setFloatUniform(2, currentTime);
+			//cubeShader->setFloatUniform(4, currentTime);
 
 			//Setting Parameters
 			cShader1->useShader();
 			if (ImGui::TreeNode("SHADER PARAMETERS")) {
 				for (int i = 0; i < cShader1->params->paramNames.size(); i++) {
 					if (cShader1->params->paramType[i] == GL_FLOAT && cShader1->params->paramNames[i] != "TIME") {
-						ImGui::InputFloat(cShader1->params->paramNames[i].c_str(), &cShader1->params->floatParams[cShader1->params->paramNames[i]], -100000.0f, 100000.0f, "%.3f");
-						cShader1->setFloatUniform(cShader1->params->paramNames[i], cShader1->params->floatParams[cShader1->params->paramNames[i]]);
+						ImGui::InputFloat(cShader1->params->paramNames[i].c_str(), &cShader1->params->floatParams[cShader1->params->paramLocs[i]], -100000.0f, 100000.0f, "%.3f");
+						cShader1->setFloatUniform(cShader1->params->paramLocs[i], cShader1->params->floatParams[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_BOOL) {
-						ImGui::Checkbox(cShader1->params->paramNames[i].c_str(), &cShader1->params->boolParams[cShader1->params->paramNames[i]]);
-						cShader1->setBoolUniform(cShader1->params->paramNames[i], cShader1->params->boolParams[cShader1->params->paramNames[i]]);
+						ImGui::Checkbox(cShader1->params->paramNames[i].c_str(), &cShader1->params->boolParams[cShader1->params->paramLocs[i]]);
+						cShader1->setBoolUniform(cShader1->params->paramLocs[i], cShader1->params->boolParams[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_INT) {
-						ImGui::InputInt(cShader1->params->paramNames[i].c_str(), &cShader1->params->intParams[cShader1->params->paramNames[i]]);
-						cShader1->setIntUniform(cShader1->params->paramNames[i], cShader1->params->intParams[cShader1->params->paramNames[i]]);
+						ImGui::InputInt(cShader1->params->paramNames[i].c_str(), &cShader1->params->intParams[cShader1->params->paramLocs[i]]);
+						cShader1->setIntUniform(cShader1->params->paramLocs[i], cShader1->params->intParams[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT) {
-						ImGui::InputScalar(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32 ,&cShader1->params->uintParams[cShader1->params->paramNames[i]]);
-						cShader1->setUIntUniform(cShader1->params->paramNames[i], cShader1->params->uintParams[cShader1->params->paramNames[i]]);
+						ImGui::InputScalar(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32 ,&cShader1->params->uintParams[cShader1->params->paramLocs[i]]);
+						cShader1->setUIntUniform(cShader1->params->paramLocs[i], cShader1->params->uintParams[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_FLOAT_VEC3) {
-						ImGui::InputFloat3(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec3Params[cShader1->params->paramNames[i]][0], "%.3f");
-						cShader1->setVec3Uniform(cShader1->params->paramNames[i], cShader1->params->vec3Params[cShader1->params->paramNames[i]]);
+						ImGui::InputFloat3(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec3Params[cShader1->params->paramLocs[i]][0], "%.3f");
+						cShader1->setVec3Uniform(cShader1->params->paramLocs[i], cShader1->params->vec3Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_FLOAT_VEC4) {
-						ImGui::InputFloat4(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec4Params[cShader1->params->paramNames[i]][0], "%.3f");
-						cShader1->setVec4Uniform(cShader1->params->paramNames[i], cShader1->params->vec4Params[cShader1->params->paramNames[i]]);
+						ImGui::InputFloat4(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec4Params[cShader1->params->paramLocs[i]][0], "%.3f");
+						cShader1->setVec4Uniform(cShader1->params->paramLocs[i], cShader1->params->vec4Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_FLOAT_VEC2) {
-						ImGui::InputFloat2(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec2Params[cShader1->params->paramNames[i]][0], "%.3f");
-						cShader1->setVec2Uniform(cShader1->params->paramNames[i], cShader1->params->vec2Params[cShader1->params->paramNames[i]]);
+						ImGui::InputFloat2(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec2Params[cShader1->params->paramLocs[i]][0], "%.3f");
+						cShader1->setVec2Uniform(cShader1->params->paramLocs[i], cShader1->params->vec2Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT_VEC3) {
-						ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(),ImGuiDataType_U32 , &cShader1->params->uvec3Params[cShader1->params->paramNames[i]][0], 3);
-						cShader1->setUIVec3Uniform(cShader1->params->paramNames[i], cShader1->params->uvec3Params[cShader1->params->paramNames[i]]);
+						ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(),ImGuiDataType_U32 , &cShader1->params->uvec3Params[cShader1->params->paramLocs[i]][0], 3);
+						cShader1->setUIVec3Uniform(cShader1->params->paramLocs[i], cShader1->params->uvec3Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT_VEC4) {
-						ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec4Params[cShader1->params->paramNames[i]][0], 4);
-						cShader1->setUIVec4Uniform(cShader1->params->paramNames[i], cShader1->params->uvec4Params[cShader1->params->paramNames[i]]);
+						ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec4Params[cShader1->params->paramLocs[i]][0], 4);
+						cShader1->setUIVec4Uniform(cShader1->params->paramLocs[i], cShader1->params->uvec4Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT_VEC2) {
-						ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec2Params[cShader1->params->paramNames[i]][0], 2);
-						cShader1->setUIVec2Uniform(cShader1->params->paramNames[i], cShader1->params->uvec2Params[cShader1->params->paramNames[i]]);
+						ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec2Params[cShader1->params->paramLocs[i]][0], 2);
+						cShader1->setUIVec2Uniform(cShader1->params->paramLocs[i], cShader1->params->uvec2Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_INT_VEC3) {
-						ImGui::InputInt3(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec3Params[cShader1->params->paramNames[i]][0]);
-						cShader1->setIVec3Uniform(cShader1->params->paramNames[i], cShader1->params->ivec3Params[cShader1->params->paramNames[i]]);
+						ImGui::InputInt3(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec3Params[cShader1->params->paramLocs[i]][0]);
+						cShader1->setIVec3Uniform(cShader1->params->paramLocs[i], cShader1->params->ivec3Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_INT_VEC4) {
-						ImGui::InputInt4(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec4Params[cShader1->params->paramNames[i]][0]);
-						cShader1->setIVec4Uniform(cShader1->params->paramNames[i], cShader1->params->ivec4Params[cShader1->params->paramNames[i]]);
+						ImGui::InputInt4(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec4Params[cShader1->params->paramLocs[i]][0]);
+						cShader1->setIVec4Uniform(cShader1->params->paramLocs[i], cShader1->params->ivec4Params[cShader1->params->paramLocs[i]]);
 					}
 					else if (cShader1->params->paramType[i] == GL_INT_VEC2) {
-						ImGui::InputInt2(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec2Params[cShader1->params->paramNames[i]][0]);
-						cShader1->setIVec2Uniform(cShader1->params->paramNames[i], cShader1->params->ivec2Params[cShader1->params->paramNames[i]]);
+						ImGui::InputInt2(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec2Params[cShader1->params->paramLocs[i]][0]);
+						cShader1->setIVec2Uniform(cShader1->params->paramLocs[i], cShader1->params->ivec2Params[cShader1->params->paramLocs[i]]);
 					}
 				}
 				ImGui::TreePop();
@@ -246,8 +248,9 @@ namespace ARB {
 		}
 
 		DeleteTexture_Buffers();
-		cShader1->DeleteShaderData();
-		cubeShader->deleteProgram();
+		cShader1->DeleteAllParameters();
+		cShader1->DeleteShaderProgram();
+		quadShader->deleteProgram();
 		Editor::Terminal_Window_Sink::Get_Singleton()->Clear_All_Logs();
 
 		Editor::UIBackend::ShutdownImguiBackend();
@@ -265,7 +268,7 @@ namespace ARB {
 		//Initializing Computer Shader Object Pointer to empty constructor
 		cShader1 = std::make_shared<ComputeShader>();
 		//Quad Shader Initialization
-		cubeShader = std::make_shared<Shader>("quadShader");//Initially set to default shader system
+		quadShader = std::make_shared<Shader>("quadShader");//Initially set to default shader system
 
 		if (Editor::UIBackend::InitiateImguiBackend(appWindow->GetWindowPtr()))
 			editorLogger->logger->info("{0} successfully linked to ImGui", glfwGetWindowTitle(appWindow->GetWindowPtr()));
@@ -318,7 +321,7 @@ namespace ARB {
 	}
 
 	void Engine::RenderQuad() {
-		cubeShader->useShader();
+		quadShader->useShader();
 		glBindVertexArray(quadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);

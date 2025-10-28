@@ -7,10 +7,9 @@ namespace ARB {
 	void ComputeShader::InitShader(std::string cShaderPath, std::string name) {
 		isCompiled = false;
 		shaderName = name;
-		initParamPtr = true;
 		m_ComputeCode = "#version 460 core\n"
 		"layout(rgba32f, binding = 0) uniform image2D imgOutput;\n"
-		"uniform float TIME;\n"
+		"layout(location = 0) uniform float TIME;\n"
 		"ivec2 UV = ivec2(gl_GlobalInvocationID.xy);\n"
 		"vec4 VALUE = vec4(1.0, 1.0, 1.0, 1.0);\n"
 		"void Compute();\n"
@@ -46,7 +45,7 @@ namespace ARB {
 
 		int shader_success = checkStatus(cObj, "Compute");
 		if (!shader_success) {
-			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
+			shaderLogger->logger->error("Unable to create {0} Compute Shader Object", shaderName);
 		}
 
 		ID = glCreateProgram();
@@ -61,23 +60,9 @@ namespace ARB {
 
 		glDeleteShader(cObj);
 
-		//Clear all elements from shader parameters
-		params->paramNames.clear();
-		params->floatParams.clear();
-		params->boolParams.clear();
-		params->intParams.clear();
-		params->uintParams.clear();
-		params->paramType.clear();
-		params->vec3Params.clear();
-		params->vec4Params.clear();
-		params->vec2Params.clear();
-		params->uvec3Params.clear();
-		params->uvec4Params.clear();
-		params->uvec2Params.clear();
-		params->ivec3Params.clear();
-		params->ivec4Params.clear();
-		params->ivec2Params.clear();
+		DeleteAllParameters();
 
+		initParamPtr = true;
 		GetUniformVariablesData();
 
 		//Extracting the size of Invocation tensor
@@ -114,7 +99,7 @@ namespace ARB {
 
 		int success = checkStatus(cObj, "Compute");
 		if (!success)
-			shaderLogger->logger->error("Unable to recompile {0} Shader Program", shaderName);
+			shaderLogger->logger->error("Unable to recompile {0} Compute Shader Object", shaderName);
 
 		ID = glCreateProgram();
 		glAttachShader(ID, cObj);
@@ -127,21 +112,7 @@ namespace ARB {
 			shaderLogger->logger->error("Unable to recompile {0} Shader Program", shaderName);
 
 		//Clear all elements from shader parameters
-		params->paramNames.clear();
-		params->floatParams.clear();
-		params->boolParams.clear();
-		params->intParams.clear();
-		params->uintParams.clear();
-		params->paramType.clear();
-		params->vec3Params.clear();
-		params->vec4Params.clear();
-		params->vec2Params.clear();
-		params->uvec3Params.clear();
-		params->uvec4Params.clear();
-		params->uvec2Params.clear();
-		params->ivec3Params.clear();
-		params->ivec4Params.clear();
-		params->ivec2Params.clear();
+		DeleteAllParameters();
 
 		GetUniformVariablesData();
 
@@ -167,51 +138,58 @@ namespace ARB {
 
 			std::string nameStr(name.data(), length);
 
+			if (nameStr == "TIME" || nameStr == "imgOutput")
+				continue;
+
 			GLint location = glGetUniformLocation(ID, nameStr.c_str());
 
 			if (type == GL_BOOL) {
-				params->boolParams.emplace(nameStr, false);
+				params->boolParams.emplace(location, false);
 			}
 			else if (type == GL_FLOAT) {
-				params->floatParams.emplace(nameStr, 0.0);
+				params->floatParams.emplace(location, 0.0);
 			}
 			else if (type == GL_INT) {
-				params->intParams.emplace(nameStr, 0);
+				params->intParams.emplace(location, 0);
 			}
 			else if (type == GL_UNSIGNED_INT) {
-				params->uintParams.emplace(nameStr, 0);
+				params->uintParams.emplace(location, 0);
 			}
 			else if (type == GL_FLOAT_VEC3) {
-				params->vec3Params.emplace(nameStr, glm::vec3(0.0, 0.0, 0.0));
+				params->vec3Params.emplace(location, glm::vec3(0.0, 0.0, 0.0));
 			}
 			else if (type == GL_FLOAT_VEC4) {
-				params->vec4Params.emplace(nameStr, glm::vec4(0.0, 0.0, 0.0, 1.0));
+				params->vec4Params.emplace(location, glm::vec4(0.0, 0.0, 0.0, 1.0));
 			}
 			else if (type == GL_FLOAT_VEC2) {
-				params->vec2Params.emplace(nameStr, glm::vec2(0.0, 0.0));
+				params->vec2Params.emplace(location, glm::vec2(0.0, 0.0));
 			}
 			else if (type == GL_INT_VEC2) {
-				params->ivec2Params.emplace(nameStr, glm::ivec2(0, 0));
+				params->ivec2Params.emplace(location, glm::ivec2(0, 0));
 			}
 			else if (type == GL_INT_VEC3) {
-				params->ivec3Params.emplace(nameStr, glm::ivec3(0, 0, 0));
+				params->ivec3Params.emplace(location, glm::ivec3(0, 0, 0));
 			}
 			else if (type == GL_INT_VEC4) {
-				params->ivec4Params.emplace(nameStr, glm::ivec4(0, 0, 0, 1));
+				params->ivec4Params.emplace(location, glm::ivec4(0, 0, 0, 1));
 			}
 			else if (type == GL_UNSIGNED_INT_VEC2) {
-				params->uvec2Params.emplace(nameStr, glm::uvec2(0, 0));
+				params->uvec2Params.emplace(location, glm::uvec2(0, 0));
 			}
 			else if (type == GL_UNSIGNED_INT_VEC3) {
-				params->uvec3Params.emplace(nameStr, glm::uvec3(0, 0, 0));
+				params->uvec3Params.emplace(location, glm::uvec3(0, 0, 0));
 			}
 			else if (type == GL_UNSIGNED_INT_VEC4) {
-				params->uvec4Params.emplace(nameStr, glm::uvec4(0, 0, 0, 1));
+				params->uvec4Params.emplace(location, glm::uvec4(0, 0, 0, 1));
 			}
+			else
+				continue;
+
 			params->paramNames.push_back(nameStr);
 			params->paramType.push_back(type);
+			params->paramLocs.push_back(location);
 
-			shaderLogger->logger->trace(nameStr);
+			shaderLogger->logger->trace((nameStr + " at location = {0}"), location);
 		}
 	}
 
@@ -255,17 +233,13 @@ namespace ARB {
 		}
 	}
 
-	void ComputeShader::DeleteShaderData() {
-		glDeleteProgram(ID);
-
+	void ComputeShader::DeleteAllParameters() {
 		if (initParamPtr) {
 			//Clear all elements from shader parameters
-			params->paramNames.clear();
 			params->floatParams.clear();
 			params->boolParams.clear();
 			params->intParams.clear();
 			params->uintParams.clear();
-			params->paramType.clear();
 			params->vec3Params.clear();
 			params->vec4Params.clear();
 			params->vec2Params.clear();
@@ -275,7 +249,15 @@ namespace ARB {
 			params->ivec3Params.clear();
 			params->ivec4Params.clear();
 			params->ivec2Params.clear();
+
+			params->paramType.clear();
+			params->paramNames.clear();
+			params->paramLocs.clear();
 		}
+	}
+
+	void ComputeShader::DeleteShaderProgram() {
+		glDeleteProgram(ID);
 	}
 
 	void ComputeShader::useShader() {
@@ -326,5 +308,51 @@ namespace ARB {
 	}
 	void ComputeShader::setIVec2Uniform(const std::string name, glm::ivec2 value) const {
 		glUniform2iv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+
+	void ComputeShader::setBoolUniform(int location, bool value) const {
+		glUniform1i(location, (int)value);
+	}
+	void ComputeShader::setIntUniform(int location, int value) const {
+		glUniform1i(location, value);
+	}
+	void ComputeShader::setUIntUniform(int location, unsigned int value) const {
+		glUniform1ui(location, value);
+	}
+	void ComputeShader::setFloatUniform(int location, float value) const {
+		glUniform1f(location, value);
+	}
+	void ComputeShader::setMatrix4Uniform(int location, glm::mat4 value) const {
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+	void ComputeShader::setMatrix3Uniform(int location, glm::mat3 value) const {
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+	void ComputeShader::setVec3Uniform(int location, glm::vec3 value) const {
+		glUniform3fv(location, 1, &value[0]);
+	}
+	void ComputeShader::setVec4Uniform(int location, glm::vec4 value) const {
+		glUniform4fv(location, 1, &value[0]);
+	}
+	void ComputeShader::setVec2Uniform(int location, glm::vec2 value) const {
+		glUniform2fv(location, 1, &value[0]);
+	}
+	void ComputeShader::setUIVec3Uniform(int location, glm::uvec3 value) const {
+		glUniform3uiv(location, 1, &value[0]);
+	}
+	void ComputeShader::setUIVec4Uniform(int location, glm::uvec4 value) const {
+		glUniform4uiv(location, 1, &value[0]);
+	}
+	void ComputeShader::setUIVec2Uniform(int location, glm::uvec2 value) const {
+		glUniform2uiv(location, 1, &value[0]);
+	}
+	void ComputeShader::setIVec3Uniform(int location, glm::ivec3 value) const {
+		glUniform3iv(location, 1, &value[0]);
+	}
+	void ComputeShader::setIVec4Uniform(int location, glm::ivec4 value) const {
+		glUniform4iv(location, 1, &value[0]);
+	}
+	void ComputeShader::setIVec2Uniform(int location, glm::ivec2 value) const {
+		glUniform2iv(location, 1, &value[0]);
 	}
 }

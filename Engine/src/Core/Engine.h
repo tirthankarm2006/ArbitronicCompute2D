@@ -25,7 +25,7 @@ namespace ARB {
 		bool recompileComputeShader, shaderCompiledOnce, useCustomShader, initValue_WorkGrp_Invoc_Size_Once;
 		unsigned int quadVAO, quadVBO;
 		void SetupDisplayQuad();
-		std::shared_ptr<Shader> cubeShader;
+		std::shared_ptr<Shader> quadShader;
 		std::shared_ptr<ComputeShader> cShader1;
 		unsigned int m_TextureID;
 		glm::ivec3 workGroupSize, prev_workGroupSize;
