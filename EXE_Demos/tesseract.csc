@@ -10,7 +10,7 @@ uniform vec2 RESOLUTION;
 
 // --- Constants ---
 const float LINE_THICKNESS = 0.015; // Our virtual line thickness
-const float GLOW_FALLOFF = 0.05;   // How soft the glow is
+uniform float GLOW_FALLOFF = 0.05;   // How soft the glow is
 
 // --- File-Scope Globals (for optimization) ---
 // We will calculate these ONCE per pixel in Compute()
