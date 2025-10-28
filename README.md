@@ -16,17 +16,15 @@ Linux or any other OS:-
  You can build with some other library as well like CMAKE. Refer to the premake files from the individual library directory to see the configurations and include folder.
 
 # Future plans
-->Adding support more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short
+->Not delete and re-assign the unchanged shader variables when shader is recompiled
 
-->Uniform variables are to be set according to location and not per name, improves performance
+->Adding support more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short
 
 ->Multiple render passes through multiple compute shader passes
 
 ->Removal of the Terminal Assertions in Release build
 
 ->Support of Command Line arguments for running application in Debug and Release explicitly from Command Line
-
-->Not delete and re-assign the unchanged shader variables when shader is recompiled
 
 ->Making more pre-implimented functions like a random value generation function or some other pre-implimented variables
 
