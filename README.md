@@ -5,6 +5,11 @@ An C++ Application to play with Compute Shaders to perform some 2D and 3D drawin
 It is a simple application where you can simply play with GLSL compute shader codes that you write. You can create various type of uniform variavles that you can set from the editor, like integer, float, vectors, integer vectors, float vectors. You can also change the work-group size which will change the window size as each pixel corresponds to one work-group. You can create various animations using a pre-defined time variable and other pre-defined variables. You can also provide your own custom Vertex and Fragment shader for rendering(still experimental). Simply create a file and inside write a void function 'Compute' and then what you code inside the function depends on what you want to make and your shader programming skills.
 You are provided with a simple shader code inside data/Shaders that you can see.
 
+# Features/How to use
+Create a file with any extension.
+Write your Compute shader code. First provide the invocation size, no need to give size in z-axis. Write void Compute(){ }. To give a particular pixel a value, give vec4 to a pre-defined variable VALUE. The position vector from bottom left corner of the screen of the pixel in set in UV. There is a pre-defined TIME variable you can use for animating. 
+You can create uniform variables, that can then be seen and set from the editor itself. Make sure on re-compilation, the uniform values are set back to their default values.
+
 Some sample codes and the executable are given in inside the EXE_Demos.
 
 # Building
