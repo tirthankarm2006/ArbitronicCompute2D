@@ -1,10 +1,4 @@
-// This layout is based on your provided examples
 layout(local_size_x = 10, local_size_y = 10) in;
-
-// --- Assumed Built-in/Provided Variables ---
-// vec2 UV: The current pixel coordinate (e.g., 0 to 1920, 0 to 1080)
-// float TIME: Time in seconds for animation
-// out vec4 VALUE: The final output color for the pixel
 
 // --- Uniforms ---
 uniform vec2 RESOLUTION; // Screen dimensions (e.g., 1920, 1080)
@@ -21,9 +15,9 @@ const float SPIN_A = 0.95; // Spin parameter (0=static, ~0.99=max)
 const float DISK_ISCO_PRO = R_s * 1.9;    // Prograde ISCO (closer, for SPIN_A=0.95)
 const float DISK_ISCO_RETRO = R_s * 4.5;  // Retrograde ISCO (further, for SPIN_A=0.95)
 const float DISK_OUTER_R = 5.0;           // Outer radius of the disk
-const float DISK_THICKNESS = 0.05;        // How thick the disk is
+const float DISK_THICKNESS = 1.0;        // How thick the disk is
 const float DISK_NOISE_SCALE = 5.0;       // How "zoomed in" the plasma noise is
-const float DISK_DENSITY_SCALE = 15.0;    // How dense the disk plasma is (affects visibility)
+const float DISK_DENSITY_SCALE = 1.0;    // How dense the disk plasma is (affects visibility)
 
 // --- Raytracing Constants ---
 const int MAX_STEPS = 128;     // Max iterations per ray
@@ -134,7 +128,7 @@ vec3 getSky(vec3 rd) {
     col = mix(col, vec3(0.2, 0.3, 0.5), 0.5 - rd.y * 0.5); // Horizon
 
     // Procedural Starfield
-    vec3 star_rd = normalize(rd) * 100.0;
+    vec3 star_rd = normalize(rd) * 500.0;
     float star_hash = hash3(floor(star_rd));
     
     float star_brightness = 0.0;
