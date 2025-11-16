@@ -14,6 +14,11 @@ namespace ARB {
 #define TERMINAL_WIN_SIZE glm::vec2(1000, 200)
 #define TERMINAL_WIN_POS glm::vec2(0, 700)
 
+#define UNIFORM_VAR_TIME_LOC_CSC 0
+#define UNIFORM_TEXTURE_LOC_FSC 0
+#define INPUT_SHADER_LOC_MAX_SIZE 500
+#define INPUT_SHADER_NAME_MAX_SIZE 50
+
 	class Engine
 	{
 	private:
@@ -31,7 +36,7 @@ namespace ARB {
 		glm::ivec3 workGroupSize, prev_workGroupSize;
 		glm::ivec3 invocationSize;
 		int fcounter;
-		float lastDeltaTime,currentTime;
+		float lastDeltaTime, currentTime;
 		void RenderQuad();
 		void SetupTexture(unsigned int width, unsigned int height);
 		void DispatchCompute();

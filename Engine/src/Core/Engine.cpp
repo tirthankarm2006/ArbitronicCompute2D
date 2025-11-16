@@ -13,9 +13,9 @@ namespace ARB {
 		bool setShaderFirst = false;
 		cShaderPath = "";
 		cShaderName = "";
-		char temp_cShaderPath[100] = "";
-		char temp_cShaderName[50] = "";
-		char temp_userVShaderPath[100] = "", temp_userFShaderPath[100] = "";
+		char temp_cShaderPath[INPUT_SHADER_LOC_MAX_SIZE] = "";
+		char temp_cShaderName[INPUT_SHADER_NAME_MAX_SIZE] = "";
+		char temp_userVShaderPath[INPUT_SHADER_LOC_MAX_SIZE] = "", temp_userFShaderPath[INPUT_SHADER_LOC_MAX_SIZE] = "";
 
 		//Printing Maximum number of Work group size and maximum number of invocations that can be deployed
 		OpenGLLimitations();
@@ -28,7 +28,7 @@ namespace ARB {
 
 		//Setting the cube shader texture sampler
 		quadShader->useShader();
-		quadShader->setIntUniform("material.diffuse", 0);
+		quadShader->setIntUniform("material.diffuse", UNIFORM_TEXTURE_LOC_FSC);
 
 		while (!appWindow->windowShouldClose()) {
 			appWindow->processInput();
@@ -52,9 +52,9 @@ namespace ARB {
 
 				//Input of Compute Shader file path and name
 				ImGui::Text("Compute Shader File Path:");
-				ImGui::InputText("##shaderPath", &temp_cShaderPath[0], IM_ARRAYSIZE(temp_cShaderPath));
+				ImGui::InputText("##shaderPath", &temp_cShaderPath[0], INPUT_SHADER_LOC_MAX_SIZE);
 				ImGui::Text("Compute Shader Name:");
-				ImGui::InputText("##ShaderName", &temp_cShaderName[0], IM_ARRAYSIZE(temp_cShaderName));
+				ImGui::InputText("##ShaderName", &temp_cShaderName[0], INPUT_SHADER_NAME_MAX_SIZE);
 				cShaderPath = std::string(temp_cShaderPath);
 				cShaderName = std::string(temp_cShaderName);
 
@@ -70,9 +70,9 @@ namespace ARB {
 				if(useCustomShader){
 					ImGui::TextColored(UI_YELLOW, "Custom Shader will require certain variables. See documentation to learn more");
 					ImGui::Text("Vertex Shader File Path:");
-					ImGui::InputText("##vshaderPath", &temp_userVShaderPath[0], 500);
+					ImGui::InputText("##vshaderPath", &temp_userVShaderPath[0], INPUT_SHADER_LOC_MAX_SIZE);
 					ImGui::Text("Fragment Shader File Path:");
-					ImGui::InputText("##fshaderPath", &temp_userFShaderPath[0], 500);
+					ImGui::InputText("##fshaderPath", &temp_userFShaderPath[0], INPUT_SHADER_LOC_MAX_SIZE);
 					userVShaderPath = std::string(temp_userVShaderPath);
 					userFShaderPath = std::string(temp_userFShaderPath);
 					if (userVShaderPath == "") {
@@ -105,7 +105,7 @@ namespace ARB {
 						quadShader->recompile(userVShaderPath.c_str(), userFShaderPath.c_str(), "cubeShader");
 						//Setting the cube shader texture sampler
 						quadShader->useShader();
-						quadShader->setIntUniform("material.diffuse", 0);
+						quadShader->setIntUniform("material.diffuse", UNIFORM_TEXTURE_LOC_FSC);
 					}
 				}
 
@@ -155,7 +155,7 @@ namespace ARB {
 
 			//Settings Pre-defined Uniforms
 			cShader1->useShader();
-			cShader1->setFloatUniform(0, currentTime);
+			cShader1->setFloatUniform(UNIFORM_VAR_TIME_LOC_CSC, currentTime);
 
 			//cubeShader->useShader();
 			//cubeShader->setFloatUniform(2, currentTime);
@@ -260,7 +260,6 @@ namespace ARB {
 	Engine::Engine(unsigned int width, unsigned int height, char* name, int xPos, int yPos) {
 		editorLogger = std::make_unique<Editor::Log>("Engine::Core");
 
-		//editorCamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), width, height);
 		appWindow = std::make_shared<Editor::EditorWindow>(width, height, name, xPos, yPos);
 		inspector1 = std::make_shared<Editor::InspectorWindowUI>("Inspector", INSPECTOR_WIN_POS, INSPECTOR_WIN_SIZE);
 		terminal = std::make_shared<Editor::InspectorWindowUI>("Terminal", TERMINAL_WIN_POS, TERMINAL_WIN_SIZE);
@@ -287,13 +286,13 @@ namespace ARB {
 		terminal->createFrame();
 		//Pooling all the Terminal Logs onto the terminal
 		for (int i = 0; i < Editor::Terminal_Window_Sink::Get_Singleton()->Get_Num_Terminal_Log_Msgs(); i++) {
-			if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::info)
+			if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == LOG_LEVEL_INFO)
 				ImGui::TextColored(UI_GREEN, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
-			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::err)
+			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == LOG_LEVEL_ERROR)
 				ImGui::TextColored(UI_RED, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
-			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::warn)
+			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == LOG_LEVEL_WARN)
 				ImGui::TextColored(UI_YELLOW, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
-			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == spdlog::level::trace)
+			else if (Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Level(i) == LOG_LEVEL_TRACE)
 				ImGui::TextColored(UI_WHITE, Editor::Terminal_Window_Sink::Get_Singleton()->Get_Terminal_Log_Msg(i).c_str());
 		}
 		terminal->endFrame();
@@ -302,7 +301,7 @@ namespace ARB {
 	void Engine::EngineTick() {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
-		lastTime = glfwGetTime();
+		lastTime = currentTime;
 	}
 
 	void Engine::SetupTexture(unsigned int width, unsigned int height) {

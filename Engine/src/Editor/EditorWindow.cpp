@@ -9,8 +9,6 @@ namespace ARB {
 			windowLogger = std::make_shared<Editor::Log>("Engine::EditorWindow");
 			windowLogger->push_terminal_sink();
 
-			GLFWimage image;
-
 			if (glfwInit()) {
 				windowLogger->logger->info("GLFW Initiated");
 			}
@@ -25,8 +23,13 @@ namespace ARB {
 			mainWindow->windowName = name;
 			mainWindow->window = glfwCreateWindow(width, height, name, NULL, NULL);
 			glfwSetWindowPos(mainWindow->window, xpos, ypos);
-			image.pixels = stbi_load("ARBC2D_Icon.png", &image.width, &image.height, nullptr, 4);
-			glfwSetWindowIcon(mainWindow->window, 1, &image);
+
+			//Setting the application image
+			{
+				GLFWimage image;
+				image.pixels = stbi_load("ARBC2D_Icon.png", &image.width, &image.height, nullptr, 4);
+				glfwSetWindowIcon(mainWindow->window, 1, &image);
+			}
 
 			if (mainWindow->window) {
 				windowLogger->logger->info("{} window has been created", mainWindow->windowName);

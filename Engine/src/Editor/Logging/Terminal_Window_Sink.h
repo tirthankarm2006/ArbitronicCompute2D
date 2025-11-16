@@ -3,6 +3,10 @@
 namespace ARB {
 	namespace Editor {
 #define LOG_LEVEL spdlog::level::level_enum
+#define LOG_LEVEL_INFO spdlog::level::info
+#define LOG_LEVEL_WARN spdlog::level::warn
+#define LOG_LEVEL_ERROR spdlog::level::err
+#define LOG_LEVEL_TRACE spdlog::level::trace
 
 		class Terminal_Window_Sink : public spdlog::sinks::base_sink<std::mutex> {	
 		private:
