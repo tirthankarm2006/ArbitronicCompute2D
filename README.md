@@ -23,16 +23,25 @@ Linux or any other OS:-
 # Future plans
 ->Not delete and re-assign the unchanged shader variables when shader is recompiled
 
-->Adding support more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short
+->Adding support for more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short within the editor
 
-->Multiple render passes through multiple compute shader passes
+->Multiple Compute Shader compute stages over one Texture buffer
 
-->Removal of the Terminal Assertions in Release build
+**->Seperating Build specific code in 'Debug' and 'Release' 
+   ->Removal of the Terminal Assertions in Release build
+
+**->Implement a better Logging system(both type of terminals)with better formating and easier reusability
+
+*->Editable Fragment shader and uniform variable management system similar to Compute Shader class
+
+*->A generic window class which is to be inherited by a GLFWwindow class or SDLwindow class or Win32window class
+
+*->A #define or a function that checks the validity of an user-input string
 
 ->Support of Command Line arguments for running application in Debug and Release explicitly from Command Line
 
-->Making more pre-implimented functions like a random value generation function or some other pre-implimented variables
+->Making more pre-implimented functions like a random value generation function or some other pre-implimented variables to be used within the shader
 
-->Will allow user to set a non-empty image2D on the window and apply various effects to it
+*->Will allow user to set a non-empty image2D on the window in the very beginning and apply various Post-processing effects to it
 
-->Suport of multiple image2D variables(empty or non-empty)
+**->Making a general Shader class to be inherited by FragmentShader, VertexShader and ComputeShader classes
