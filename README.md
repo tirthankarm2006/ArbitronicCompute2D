@@ -21,8 +21,6 @@ Linux or any other OS:-
  You can build with some other library as well like CMAKE. Refer to the premake files from the individual library directory to see the configurations and include folder.
 
 # Future plans
-->Not delete and re-assign the unchanged shader variables when shader is recompiled
-
 ->Adding support for more shader variables, like bool_vec2, bool_vec3, bool_vec4, double, double_vec2, double_vec3, double_vec4, byte, short, unsigned_byte, unsigned_short within the editor
 
 ->Multiple Compute Shader compute stages over one Texture buffer
