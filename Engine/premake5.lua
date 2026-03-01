@@ -3,7 +3,7 @@ project "_ArbitronicCompute2D"
     kind "ConsoleApp"
     language "C++"
 
-    objdir    ("binaries/objs_int")
+    objdir ("binaries/objs_int")
 
     files{
         "src/**.h",
@@ -64,11 +64,11 @@ project "_ArbitronicCompute2D"
 		}
 
     filter "configurations:Debug"
-        targetdir ("Engine/binaries/Main/Debug")
+        targetdir ("binaries/Main/Debug")
         defines "ARB_DEBUG"
         symbols "On"
 
     filter "configurations:Release"
-        targetdir ("Engine/binaries/Main/Release")
+        targetdir ("binaries/Main/Release")
         defines "ARB_RELEASE"
         optimize "On"
