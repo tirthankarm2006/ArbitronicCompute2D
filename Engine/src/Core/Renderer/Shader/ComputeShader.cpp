@@ -5,12 +5,16 @@ namespace ARB {
 	static bool initParamPtr = false;
 
 	void ComputeShader::InitShader(std::string cShaderPath, std::string name) {
+		shaderLogger->push_terminal_sink();
+
 		isCompiled = false;
 		shaderName = name;
-		m_ComputeCode = "#version 460 core\n"
+		m_ComputeCode = 
+		"#version 460 core\n"
 		"layout(rgba32f, binding = 0) uniform image2D imgOutput;\n"
 		"layout(location = 0) uniform float TIME;\n"
-		"ivec2 UV = ivec2(gl_GlobalInvocationID.xy);\n"
+		"layout(location = 1) uniform float DELTA_TIME;\n"
+		"const ivec2 UV = ivec2(gl_GlobalInvocationID.xy);\n"
 		"vec4 VALUE = vec4(1.0, 1.0, 1.0, 1.0);\n"
 		"void Compute();\n"
 		"void main() {\n"
@@ -59,8 +63,6 @@ namespace ARB {
 			shaderLogger->logger->error("Unable to create {0} Shader Program", shaderName);
 
 		glDeleteShader(cObj);
-
-		DeleteAllParameters();
 
 		initParamPtr = true;
 		GetUniformVariablesData();
@@ -111,9 +113,6 @@ namespace ARB {
 		else
 			shaderLogger->logger->error("Unable to recompile {0} Shader Program", shaderName);
 
-		//Clear all elements from shader parameters
-		DeleteAllParameters();
-
 		GetUniformVariablesData();
 
 		//Extracting the size of Invocation tensor
@@ -123,83 +122,289 @@ namespace ARB {
 	}
 
 	void ComputeShader::GetUniformVariablesData() {
+		if (!ID)
+			return;
+
+		ShaderParams* c_params = new ShaderParams();
+		paramNum = 0;
+
 		int uniformNums, maxNameLength;
 		glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &uniformNums);
 		glGetProgramiv(ID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLength);
 
-		shaderLogger->logger->trace("Active Uniform variables found:");
+		shaderLogger->logger->trace("Active Uniform Variables found on Compilation:");
 		for (int i = 0; i < uniformNums; i++) {
-			std::vector<char> name(maxNameLength);
-
+			std::vector<char> c_name(maxNameLength);
+			std::string typeStr;
 			GLenum type;
 			GLint size;
 			GLsizei length;
-			glGetActiveUniform(ID, i, maxNameLength, &length, &size, &type, name.data());
+			glGetActiveUniform(ID, i, maxNameLength, &length, &size, &type, c_name.data());
 
-			std::string nameStr(name.data(), length);
-
-			if (nameStr == "TIME" || nameStr == "imgOutput")
-				continue;
-
-			GLint location = glGetUniformLocation(ID, nameStr.c_str());
+			std::string name(c_name.data(), length);
+			GLint location = glGetUniformLocation(ID, (const char*)c_name.data());
 
 			if (type == GL_BOOL) {
-				params->boolParams.emplace(location, false);
+				UniformBool param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->boolParams.size(); i++) {
+					if (m_params->boolParams[i].name == name) {
+						param.value = m_params->boolParams[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = false;
+				c_params->boolParams.push_back(param);
+				typeStr = "boolean";
 			}
 			else if (type == GL_FLOAT) {
-				params->floatParams.emplace(location, 0.0);
+				UniformFloat param = UniformFloat();
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->floatParams.size(); i++) {
+					if (m_params->floatParams[i].name == name) {
+						param.value = m_params->floatParams[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = 0.0;
+				c_params->floatParams.push_back(param);
+				typeStr = "float";
 			}
 			else if (type == GL_INT) {
-				params->intParams.emplace(location, 0);
+				UniformInt param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->intParams.size(); i++) {
+					if (m_params->intParams[i].name == name) {
+						param.value = m_params->intParams[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = 0;
+				c_params->intParams.push_back(param);
+				typeStr = "int";
+			}
+			else if (type == GL_SAMPLER_2D) {
+				UniformSampler2D param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->sampler2DParams.size(); i++) {
+					if (m_params->sampler2DParams[i].name == name) {
+						param.value = m_params->sampler2DParams[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = -1;
+				c_params->sampler2DParams.push_back(param);
+				typeStr = "sampler2D";
 			}
 			else if (type == GL_UNSIGNED_INT) {
-				params->uintParams.emplace(location, 0);
+				UniformUint param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->uintParams.size(); i++) {
+					if (m_params->uintParams[i].name == name) {
+						param.value = m_params->uintParams[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = 0;
+				c_params->uintParams.push_back(param);
+				typeStr = "unsigned_int";
 			}
 			else if (type == GL_FLOAT_VEC3) {
-				params->vec3Params.emplace(location, glm::vec3(0.0, 0.0, 0.0));
+				UniformVec3 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->vec3Params.size(); i++) {
+					if (m_params->vec3Params[i].name == name) {
+						param.value = m_params->vec3Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::vec3(0, 0, 0);
+				c_params->vec3Params.push_back(param);
+				typeStr = "vec3_float";
 			}
 			else if (type == GL_FLOAT_VEC4) {
-				params->vec4Params.emplace(location, glm::vec4(0.0, 0.0, 0.0, 1.0));
+				UniformVec4 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->vec4Params.size(); i++) {
+					if (m_params->vec4Params[i].name == name) {
+						param.value = m_params->vec4Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::vec4(0.0, 0.0, 0.0, 1.0);
+				c_params->vec4Params.push_back(param);
+				typeStr = "vec4_float";
 			}
 			else if (type == GL_FLOAT_VEC2) {
-				params->vec2Params.emplace(location, glm::vec2(0.0, 0.0));
+				UniformVec2 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->vec2Params.size(); i++) {
+					if (m_params->vec2Params[i].name == name) {
+						param.value = m_params->vec2Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::vec2(0, 0);
+				c_params->vec2Params.push_back(param);
+				typeStr = "vec2_float";
 			}
 			else if (type == GL_INT_VEC2) {
-				params->ivec2Params.emplace(location, glm::ivec2(0, 0));
+				UniformIvec2 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->ivec2Params.size(); i++) {
+					if (m_params->ivec2Params[i].name == name) {
+						param.value = m_params->ivec2Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::ivec2(0, 0);
+				c_params->ivec2Params.push_back(param);
+				typeStr = "vec2_int";
 			}
 			else if (type == GL_INT_VEC3) {
-				params->ivec3Params.emplace(location, glm::ivec3(0, 0, 0));
+				UniformIvec3 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->ivec3Params.size(); i++) {
+					if (m_params->ivec3Params[i].name == name) {
+						param.value = m_params->ivec3Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::ivec3(0, 0, 0);
+				c_params->ivec3Params.push_back(param);
+				typeStr = "vec3_int";
 			}
 			else if (type == GL_INT_VEC4) {
-				params->ivec4Params.emplace(location, glm::ivec4(0, 0, 0, 1));
+				UniformIvec4 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->ivec4Params.size(); i++) {
+					if (m_params->ivec4Params[i].name == name) {
+						param.value = m_params->ivec4Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::ivec4(0, 0, 0, 1);
+				c_params->ivec4Params.push_back(param);
+				typeStr = "vec4_int";
 			}
 			else if (type == GL_UNSIGNED_INT_VEC2) {
-				params->uvec2Params.emplace(location, glm::uvec2(0, 0));
+				UniformUvec2 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->uvec2Params.size(); i++) {
+					if (m_params->uvec2Params[i].name == name) {
+						param.value = m_params->uvec2Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::uvec2(0, 0);
+				c_params->uvec2Params.push_back(param);
+				typeStr = "vec2_unsigned_int";
 			}
 			else if (type == GL_UNSIGNED_INT_VEC3) {
-				params->uvec3Params.emplace(location, glm::uvec3(0, 0, 0));
+				UniformUvec3 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->uvec3Params.size(); i++) {
+					if (m_params->uvec3Params[i].name == name) {
+						param.value = m_params->uvec3Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::uvec3(0, 0, 0);
+				c_params->uvec3Params.push_back(param);
+				typeStr = "vec3_unsigned_int";
 			}
 			else if (type == GL_UNSIGNED_INT_VEC4) {
-				params->uvec4Params.emplace(location, glm::uvec4(0, 0, 0, 1));
+				UniformUvec4 param;
+				param.name = name;
+				param.shaderlocation = location;
+				//Searching whether the variable with same name is already present in array
+				bool isFound = false;
+				for (int i = 0; i < m_params->uvec4Params.size(); i++) {
+					if (m_params->uvec4Params[i].name == name) {
+						param.value = m_params->uvec4Params[i].value;
+						isFound = true;
+						break;
+					}
+				}
+				if (!isFound)
+					param.value = glm::uvec4(0, 0, 0, 1);
+				c_params->uvec4Params.push_back(param);
+				typeStr = "vec4_unsigned_int";
 			}
 			else
 				continue;
 
-			params->paramNames.push_back(nameStr);
-			params->paramType.push_back(type);
-			params->paramLocs.push_back(location);
-
-			shaderLogger->logger->trace((nameStr + " at location = {0}"), location);
+			shaderLogger->logger->trace("{0} of type {1} at location = {2}", name, typeStr, location);
+			paramNum++;
 		}
-	}
 
-	ComputeShader::ComputeShader() {
-		ID = 0;
-		isCompiled = false;
-		invocationSize = glm::ivec3(1, 1, 1);
-		params = std::make_unique<ShaderParams>();
-		shaderLogger = std::make_shared<Editor::Log>("Engine::Compute_Shader");
-		shaderLogger->push_terminal_sink();
+		DeleteAllParameters();
+		m_params = c_params;
 	}
 
 	int ComputeShader::checkStatus(unsigned int obj, std::string type) {
@@ -219,7 +424,7 @@ namespace ARB {
 			}
 		}
 		else if(type == "Program") {
-			glGetProgramiv(obj, GL_COMPILE_STATUS, &success);
+			glGetProgramiv(obj, GL_LINK_STATUS, &success);
 			if (!success) {
 				glGetProgramInfoLog(obj, 1024, NULL, logInfo);
 				shaderLogger->logger->error("Could not compile Shader Program");
@@ -231,28 +436,28 @@ namespace ARB {
 				return 1;
 			}
 		}
+		return 0;
 	}
 
 	void ComputeShader::DeleteAllParameters() {
 		if (initParamPtr) {
 			//Clear all elements from shader parameters
-			params->floatParams.clear();
-			params->boolParams.clear();
-			params->intParams.clear();
-			params->uintParams.clear();
-			params->vec3Params.clear();
-			params->vec4Params.clear();
-			params->vec2Params.clear();
-			params->uvec3Params.clear();
-			params->uvec4Params.clear();
-			params->uvec2Params.clear();
-			params->ivec3Params.clear();
-			params->ivec4Params.clear();
-			params->ivec2Params.clear();
-
-			params->paramType.clear();
-			params->paramNames.clear();
-			params->paramLocs.clear();
+			m_params->floatParams.clear();
+			m_params->boolParams.clear();
+			m_params->intParams.clear();
+			m_params->uintParams.clear();
+			m_params->vec3Params.clear();
+			m_params->vec4Params.clear();
+			m_params->vec2Params.clear();
+			m_params->uvec3Params.clear();
+			m_params->uvec4Params.clear();
+			m_params->uvec2Params.clear();
+			m_params->ivec3Params.clear();
+			m_params->ivec4Params.clear();
+			m_params->ivec2Params.clear();
+			m_params->sampler2DParams.clear();
+			m_params->matrix3Params.clear();
+			m_params->matrix4Params.clear();
 		}
 	}
 

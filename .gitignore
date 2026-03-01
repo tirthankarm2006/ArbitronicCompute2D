@@ -2,47 +2,49 @@
 .vs/
 Engine/binaries/objs_int/
 
-Engine/3rdPartyLibs/GLFW/*
-Engine/3rdPartyLibs/glad_OpenGL/*
-Engine/3rdPartyLibs/spdlog/*
-Engine/3rdPartyLibs/imgui/*
+3rdPartyLibs/GLFW/*
+3rdPartyLibs/glad_OpenGL/*
+3rdPartyLibs/spdlog/*
+3rdPartyLibs/imgui/*
 
 #GLFW
-!Engine/3rdPartyLibs/GLFW/
-!Engine/3rdPartyLibs/GLFW/src/
-!Engine/3rdPartyLibs/GLFW/include/
-!Engine/3rdPartyLibs/GLFW/deps/
-!Engine/3rdPartyLibs/GLFW/LICENSE.md
-!Engine/3rdPartyLibs/GLFW/premake5.lua
+!3rdPartyLibs/GLFW/
+!3rdPartyLibs/GLFW/src/
+!3rdPartyLibs/GLFW/include/
+!3rdPartyLibs/GLFW/deps/
+!3rdPartyLibs/GLFW/LICENSE.md
+!3rdPartyLibs/GLFW/premake5.lua
 
 #Glad
-!Engine/3rdPartyLibs/glad_OpenGL/
-!Engine/3rdPartyLibs/glad_OpenGL/src/
-!Engine/3rdPartyLibs/glad_OpenGL/include/
-!Engine/3rdPartyLibs/glad_OpenGL/premake5.lua
+!3rdPartyLibs/glad_OpenGL/
+!3rdPartyLibs/glad_OpenGL/src/
+!3rdPartyLibs/glad_OpenGL/include/
+!3rdPartyLibs/glad_OpenGL/premake5.lua
 
 #spdlog
-!Engine/3rdPartyLibs/spdlog/
-!Engine/3rdPartyLibs/spdlog/src/
-!Engine/3rdPartyLibs/spdlog/include/
-!Engine/3rdPartyLibs/spdlog/LICENSE
-!Engine/3rdPartyLibs/spdlog/premake5.lua
+!3rdPartyLibs/spdlog/
+!3rdPartyLibs/spdlog/src/
+!3rdPartyLibs/spdlog/include/
+!3rdPartyLibs/spdlog/LICENSE
+!3rdPartyLibs/spdlog/premake5.lua
 
 #imgui
-!Engine/3rdPartyLibs/imgui/
-!Engine/3rdPartyLibs/imgui/src/
-!Engine/3rdPartyLibs/imgui/misc/
-!Engine/3rdPartyLibs/imgui/premake5.lua
-!Engine/3rdPartyLibs/imgui/LICENSE.txt
+!3rdPartyLibs/imgui/
+!3rdPartyLibs/imgui/src/
+!3rdPartyLibs/imgui/misc/
+!3rdPartyLibs/imgui/premake5.lua
+!3rdPartyLibs/imgui/LICENSE.txt
 
 #Glm
-Engine/3rdPartyLibs/Glm/doc/
+3rdPartyLibs/Glm/doc/
 
 #STB
-Engine/3rdPartyLibs/stb/docs/
-Engine/3rdPartyLibs/stb/tests/
-Engine/3rdPartyLibs/stb/tools/
-Engine/3rdPartyLibs/stb/stb_image_resize_test/
+3rdPartyLibs/stb/docs/
+3rdPartyLibs/stb/tests/
+3rdPartyLibs/stb/tools/
+3rdPartyLibs/stb/stb_image_resize_test/
+3rdPartyLibs/stb/binaries/
+3rdPartyLibs/stb/objs-int
 
 #files
 *.user

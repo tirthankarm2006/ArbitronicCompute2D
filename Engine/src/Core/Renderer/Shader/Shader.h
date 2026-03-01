@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Logging/EditorLog.h"
+#include "Editor/Logging/EditorLog.h"
 
 namespace ARB {
 	class Shader

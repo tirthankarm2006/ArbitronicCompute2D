@@ -20,7 +20,7 @@ namespace ARB {
 			void Clear_All_Logs();
 			inline std::string& Get_Terminal_Log_Msg(int i) { return terminalLogs[i].log_msg; }
 			inline LOG_LEVEL& Get_Terminal_Log_Level(int i) { return terminalLogs[i].log_level; }
-			inline int Get_Num_Terminal_Log_Msgs() { return terminalLogs.size(); }
+			inline size_t Get_Num_Terminal_Log_Msgs() { return terminalLogs.size(); }
 		protected:
 			void sink_it_(const spdlog::details::log_msg& msg) override;
 			void flush_() override { }

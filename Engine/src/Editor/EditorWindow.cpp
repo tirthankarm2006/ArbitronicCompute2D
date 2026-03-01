@@ -55,12 +55,11 @@ namespace ARB {
 				}
 				else {
 					UIBackend::InitiateImguiBackend(window);
-					Editor::UIBackend::setUITheme();
+					UIBackend::setUITheme();
 				}
 			});
 
 			glfwSetInputMode(mainWindow->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			glfwSwapInterval(0);
 
 			if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 				windowLogger->logger->info("GLAD Initiated");
@@ -68,6 +67,7 @@ namespace ARB {
 			else
 				windowLogger->logger->error("GLAD could not be initiated");
 
+			glfwSwapInterval(1);
 		}
 
 		void EditorWindow::ResetWindowSize(unsigned int width, unsigned int height) {
@@ -106,7 +106,7 @@ namespace ARB {
 
 		void EditorWindow::startUpdate() {
 			glClearColor(0.12f, 0.12f, 0.12f, 0.12f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT);
 		}
 
 		void EditorWindow::endUpdate() {

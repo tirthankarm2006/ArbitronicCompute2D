@@ -4,7 +4,7 @@ layout(local_size_x = 10, local_size_y = 10) in;
 uniform vec2 RESOLUTION; // Screen dimensions (e.g., 1920, 1080)
 
 // --- "Physics" & Scene Constants ---
-const float R_s = 0.5;                     // Schwarzschild Radius (Event Horizon) - REDUCED FURTHER
+uniform float R_s = 0.5;                     // Schwarzschild Radius (Event Horizon) - REDUCED FURTHER
 const float SHADOW_RADIUS = R_s * 2.59807; // The "Black Hole Shadow" (sqrt(27)/2 * R_s)
 const float LENSING_STRENGTH = 1.5;        // "G*M" for lensing
 const float CHECKER_SIZE = 2.0;            // Size of the checkerboard tiles

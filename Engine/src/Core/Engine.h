@@ -1,12 +1,12 @@
 #pragma once
 #include "ARBpch.h"
-#include "EditorWindow.h"
-#include "Logging/EditorLog.h"
-#include "Logging/Terminal_Window_Sink.h"
-#include "InspectorWindowUI.h"
-#include "Shader.h"
-#include "UIBackend.h"
-#include "ComputeShader.h"
+#include "Editor/EditorWindow.h"
+#include "Editor/Logging/EditorLog.h"
+#include "Editor/Logging/Terminal_Window_Sink.h"
+#include "Editor/InspectorWindowUI.h"
+#include "Renderer/Shader/Shader.h"
+#include "Editor/UIBackend.h"
+#include "Renderer/Shader/ComputeShader.h"
 
 namespace ARB {
 #define INSPECTOR_WIN_SIZE glm::vec2(600, 880)
@@ -15,6 +15,7 @@ namespace ARB {
 #define TERMINAL_WIN_POS glm::vec2(0, 700)
 
 #define UNIFORM_VAR_TIME_LOC_CSC 0
+#define UNIFORM_VAR_DELTA_TIME_LOC_CSC 1
 #define UNIFORM_TEXTURE_LOC_FSC 0
 #define INPUT_SHADER_LOC_MAX_SIZE 500
 #define INPUT_SHADER_NAME_MAX_SIZE 50
@@ -39,6 +40,7 @@ namespace ARB {
 		float lastDeltaTime, currentTime;
 		void RenderQuad();
 		void SetupTexture(unsigned int width, unsigned int height);
+		void SetParamsUI();
 		void DispatchCompute();
 		void DeleteTexture_Buffers();
 		void ShowFrameData();

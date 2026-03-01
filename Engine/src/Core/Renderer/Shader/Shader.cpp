@@ -18,8 +18,6 @@ namespace ARB {
 
 		fShaderCode =             "#version 460 core\n"
 			                      "out vec4 FragColor;\n"
-		                          "in vec3 Normal;\n"
-								  "in vec3 FragPos;\n"
 								  "in vec2 TexCoords;\n"
 								  "struct Material { sampler2D diffuse; };\n"
 								  "uniform Material material;\n"
