@@ -135,14 +135,17 @@ namespace ARB {
 		shaderLogger->logger->trace("Active Uniform Variables found on Compilation:");
 		for (int i = 0; i < uniformNums; i++) {
 			std::vector<char> c_name(maxNameLength);
-			std::string typeStr;
 			GLenum type;
 			GLint size;
 			GLsizei length;
 			glGetActiveUniform(ID, i, maxNameLength, &length, &size, &type, c_name.data());
 
-			std::string name(c_name.data(), length);
 			GLint location = glGetUniformLocation(ID, (const char*)c_name.data());
+			if (location == 0 || location == 1)//Not consider TIME and DELTA_TIME variable
+				continue;
+
+			std::string typeStr;
+			std::string name(c_name.data(), length);
 
 			if (type == GL_BOOL) {
 				UniformBool param;
@@ -405,6 +408,49 @@ namespace ARB {
 
 		DeleteAllParameters();
 		m_params = c_params;
+	}
+
+	void ComputeShader::setValuesToAllParams() {
+
+		//All float params
+		for (int i = 0; i < m_params->floatParams.size(); i++)
+			setFloatUniform(m_params->floatParams[i].shaderlocation, m_params->floatParams[i].value);
+
+		for (int i = 0; i < m_params->intParams.size(); i++)
+			setIntUniform(m_params->intParams[i].shaderlocation, m_params->intParams[i].value);
+
+		for (int i = 0; i < m_params->boolParams.size(); i++)
+			setBoolUniform(m_params->boolParams[i].shaderlocation, m_params->boolParams[i].value);
+
+		for (int i = 0; i < m_params->uintParams.size(); i++)
+			setUIntUniform(m_params->uintParams[i].shaderlocation, m_params->uintParams[i].value);
+
+		for (int i = 0; i < m_params->vec3Params.size(); i++)
+			setVec3Uniform(m_params->vec3Params[i].shaderlocation, m_params->vec3Params[i].value);
+
+		for (int i = 0; i < m_params->vec2Params.size(); i++)
+			setVec2Uniform(m_params->vec2Params[i].shaderlocation, m_params->vec2Params[i].value);
+
+		for (int i = 0; i < m_params->vec4Params.size(); i++)
+			setVec4Uniform(m_params->vec4Params[i].shaderlocation, m_params->vec4Params[i].value);
+
+		for (int i = 0; i < m_params->ivec3Params.size(); i++)
+			setIVec3Uniform(m_params->ivec3Params[i].shaderlocation, m_params->ivec3Params[i].value);
+
+		for (int i = 0; i < m_params->ivec2Params.size(); i++) 
+			setIVec2Uniform(m_params->ivec2Params[i].shaderlocation, m_params->ivec2Params[i].value);
+
+		for (int i = 0; i < m_params->ivec4Params.size(); i++)
+			setIVec4Uniform(m_params->ivec4Params[i].shaderlocation, m_params->ivec4Params[i].value);
+
+		for (int i = 0; i < m_params->uvec3Params.size(); i++)
+			setUIVec3Uniform(m_params->uvec3Params[i].shaderlocation, m_params->uvec3Params[i].value);
+
+		for (int i = 0; i < m_params->uvec2Params.size(); i++)
+			setUIVec2Uniform(m_params->uvec2Params[i].shaderlocation, m_params->uvec2Params[i].value);
+
+		for (int i = 0; i < m_params->uvec4Params.size(); i++)
+			setUIVec4Uniform(m_params->uvec4Params[i].shaderlocation, m_params->uvec4Params[i].value);
 	}
 
 	int ComputeShader::checkStatus(unsigned int obj, std::string type) {

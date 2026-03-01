@@ -47,6 +47,8 @@ namespace ARB {
 		void setIVec3Uniform(const int location, glm::ivec3 value) const;
 		void setIVec4Uniform(const int location, glm::ivec4 value) const;
 		void setIVec2Uniform(const int location, glm::ivec2 value) const;
+		void setValuesToAllParams();
+
 		void recompileShader(std::string cShaderPath, std::string cShaderName);
 		inline int getUniformParamsNumbers() const { return paramNum; }
 		void DeleteAllParameters();

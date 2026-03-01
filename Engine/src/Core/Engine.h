@@ -38,9 +38,11 @@ namespace ARB {
 		glm::ivec3 invocationSize;
 		int fcounter;
 		float lastDeltaTime, currentTime;
+		bool vsync;
 		void RenderQuad();
 		void SetupTexture(unsigned int width, unsigned int height);
-		void SetParamsUI();
+		void GetParamsOverInspector();
+		void SetVSync();
 		void DispatchCompute();
 		void DeleteTexture_Buffers();
 		void ShowFrameData();

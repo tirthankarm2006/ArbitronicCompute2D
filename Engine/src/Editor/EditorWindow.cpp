@@ -4,9 +4,9 @@
 
 namespace ARB {
 	namespace Editor {
-		EditorWindow::EditorWindow(unsigned int width, unsigned int height, char* name, int xpos, int ypos) {
-			mainWindow = std::make_shared<WindowProps>();
-			windowLogger = std::make_shared<Editor::Log>("Engine::EditorWindow");
+		EditorWindow::EditorWindow(unsigned int width, unsigned int height, char* name, int xpos, int ypos) 
+			: mainWindow(std::make_shared<WindowProps>()), windowLogger(std::make_shared<Editor::Log>("Engine::EditorWindow")){
+
 			windowLogger->push_terminal_sink();
 
 			if (glfwInit()) {

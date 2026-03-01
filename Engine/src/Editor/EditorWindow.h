@@ -12,7 +12,6 @@ namespace ARB{
 		private:
 			std::shared_ptr<Editor::Log> windowLogger;
 			std::shared_ptr<WindowProps> mainWindow;
-			GLFWimage* windowIcon;
 		public:
 			void processInput();
 			int windowShouldClose();
@@ -20,13 +19,13 @@ namespace ARB{
 			void startUpdate();
 			bool isWindowMinized();
 			void endUpdate();
+			void setVsync(bool v) { glfwSwapInterval(v); }
 			void ResetWindowSize(unsigned int width, unsigned int height);
 			inline int GetWindowHeight() { return mainWindow->height; }
 			inline int GetWindowWidth() { return mainWindow->width; }
 			inline GLFWwindow* GetWindowPtr() { return mainWindow->window; }
 			void closeWindow();
 			EditorWindow(unsigned int width, unsigned int height, char* name, int xpos, int ypos);
-			EditorWindow(){}
 			~EditorWindow();
 		};
 	}

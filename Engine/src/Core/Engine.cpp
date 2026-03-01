@@ -144,23 +144,23 @@ namespace ARB {
 				editorLogger->logger->info("Window has been reset with Invocation Size, {0}, {1}, {2}", invocationSize.x, invocationSize.y, invocationSize.z);
 			}
 
-			//Settings Pre-defined Uniforms
+			//Getting Parameters through Inspector
+			GetParamsOverInspector();
+
+			//Setting all uniform variables value to OpenGL
 			cShader1->useShader();
 			cShader1->setFloatUniform(UNIFORM_VAR_TIME_LOC_CSC, currentTime);
 			cShader1->setFloatUniform(UNIFORM_VAR_DELTA_TIME_LOC_CSC, deltaTime);
-
-			//cubeShader->useShader();
-			//cubeShader->setFloatUniform(2, currentTime);
-			//cubeShader->setFloatUniform(4, currentTime);
-
-			//Setting Parameters through ImGUI
-			SetParamsUI();
+			cShader1->setValuesToAllParams();
 
 			//Recompile Button
 			if (ImGui::Button("RECOMPILE", UI_BUTTON_SIZE)) {
 				Editor::Terminal_Window_Sink::Get_Singleton()->Clear_All_Logs();
 				cShader1->recompileShader(cShaderPath, cShaderName);
 			}
+
+			//V-Sync button
+			SetVSync();
 
 			//FrameTime/FPS values
 			ShowFrameData();
@@ -198,7 +198,7 @@ namespace ARB {
 		terminal(std::make_shared<Editor::InspectorWindowUI>("Terminal", TERMINAL_WIN_POS, TERMINAL_WIN_SIZE)),
 		cShader1(std::make_shared<ComputeShader>()), quadShader(std::make_shared<Shader>("quadShader")),
 		recompileComputeShader(false), shaderCompiledOnce(false), initValue_WorkGrp_Invoc_Size_Once(false), fcounter(0),
-		lastDeltaTime(0), useCustomShader(false), cShaderPath("_CSPATH_"), cShaderName("_CSNAME_"){
+		lastDeltaTime(0), useCustomShader(false), cShaderPath("_CSPATH_"), cShaderName("_CSNAME_"), vsync(true){
 
 		InitValue_WorkGrp_Invoc_Size();
 
@@ -214,158 +214,84 @@ namespace ARB {
 		editorLogger->logger->info("Editor Initialized");
 	}
 
-	void Engine::SetParamsUI() {
-		cShader1->useShader();
-		
+	void Engine::GetParamsOverInspector() {		
 		if (ImGui::TreeNode("SHADER PARAMETERS")) {
-			//Last Algorithm
-			/*
-			for (int i = 0; i < cShader1->m_params->paramLocs.size(); i++) {
-				if (cShader1->m_params->paramType[i] == GL_FLOAT && cShader1->params->paramNames[i] != "TIME") {
-					ImGui::InputFloat(cShader1->params->paramNames[i].c_str(), &cShader1->params->floatParams[cShader1->params->paramLocs[i]], -100000.0f, 100000.0f, "%.3f");
-					cShader1->setFloatUniform(cShader1->params->paramLocs[i], cShader1->params->floatParams[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_BOOL) {
-					ImGui::Checkbox(cShader1->params->paramNames[i].c_str(), &cShader1->params->boolParams[cShader1->params->paramLocs[i]]);
-					cShader1->setBoolUniform(cShader1->params->paramLocs[i], cShader1->params->boolParams[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_INT) {
-					ImGui::InputInt(cShader1->params->paramNames[i].c_str(), &cShader1->params->intParams[cShader1->params->paramLocs[i]]);
-					cShader1->setIntUniform(cShader1->params->paramLocs[i], cShader1->params->intParams[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT) {
-					ImGui::InputScalar(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uintParams[cShader1->params->paramLocs[i]]);
-					cShader1->setUIntUniform(cShader1->params->paramLocs[i], cShader1->params->uintParams[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_FLOAT_VEC3) {
-					ImGui::InputFloat3(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec3Params[cShader1->params->paramLocs[i]][0], "%.3f");
-					cShader1->setVec3Uniform(cShader1->params->paramLocs[i], cShader1->params->vec3Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_FLOAT_VEC4) {
-					ImGui::InputFloat4(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec4Params[cShader1->params->paramLocs[i]][0], "%.3f");
-					cShader1->setVec4Uniform(cShader1->params->paramLocs[i], cShader1->params->vec4Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_FLOAT_VEC2) {
-					ImGui::InputFloat2(cShader1->params->paramNames[i].c_str(), &cShader1->params->vec2Params[cShader1->params->paramLocs[i]][0], "%.3f");
-					cShader1->setVec2Uniform(cShader1->params->paramLocs[i], cShader1->params->vec2Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT_VEC3) {
-					ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec3Params[cShader1->params->paramLocs[i]][0], 3);
-					cShader1->setUIVec3Uniform(cShader1->params->paramLocs[i], cShader1->params->uvec3Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT_VEC4) {
-					ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec4Params[cShader1->params->paramLocs[i]][0], 4);
-					cShader1->setUIVec4Uniform(cShader1->params->paramLocs[i], cShader1->params->uvec4Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_UNSIGNED_INT_VEC2) {
-					ImGui::InputScalarN(cShader1->params->paramNames[i].c_str(), ImGuiDataType_U32, &cShader1->params->uvec2Params[cShader1->params->paramLocs[i]][0], 2);
-					cShader1->setUIVec2Uniform(cShader1->params->paramLocs[i], cShader1->params->uvec2Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_INT_VEC3) {
-					ImGui::InputInt3(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec3Params[cShader1->params->paramLocs[i]][0]);
-					cShader1->setIVec3Uniform(cShader1->params->paramLocs[i], cShader1->params->ivec3Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_INT_VEC4) {
-					ImGui::InputInt4(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec4Params[cShader1->params->paramLocs[i]][0]);
-					cShader1->setIVec4Uniform(cShader1->params->paramLocs[i], cShader1->params->ivec4Params[cShader1->params->paramLocs[i]]);
-				}
-				else if (cShader1->params->paramType[i] == GL_INT_VEC2) {
-					ImGui::InputInt2(cShader1->params->paramNames[i].c_str(), &cShader1->params->ivec2Params[cShader1->params->paramLocs[i]][0]);
-					cShader1->setIVec2Uniform(cShader1->params->paramLocs[i], cShader1->params->ivec2Params[cShader1->params->paramLocs[i]]);
-				}
-			}
-			*/
 			if((cShader1->m_params->floatParams.size()-2) <= 0)
 			   ImGui::TextColored(UI_YELLOW, "FLOAT PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->floatParams.size(); i++) {
-				if (cShader1->m_params->floatParams[i].name == "TIME" || cShader1->m_params->floatParams[i].name == "DELTA_TIME")
-					continue;
 				ImGui::InputFloat(cShader1->m_params->floatParams[i].name.c_str(), &cShader1->m_params->floatParams[i].value, -10000.0f, 10000.0f, "%.3f");
-				cShader1->setFloatUniform(cShader1->m_params->floatParams[i].shaderlocation, cShader1->m_params->floatParams[i].value);
 			}
 
 			if(cShader1->m_params->intParams.size())
 			   ImGui::TextColored(UI_YELLOW, "INTEGER PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->intParams.size(); i++) {
 				ImGui::InputInt(cShader1->m_params->intParams[i].name.c_str(), &cShader1->m_params->intParams[i].value, -10000, 10000);
-				cShader1->setIntUniform(cShader1->m_params->intParams[i].shaderlocation, cShader1->m_params->intParams[i].value);
 			}
 
 			if(cShader1->m_params->boolParams.size())
 			   ImGui::TextColored(UI_YELLOW, "BOOLEAN PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->boolParams.size(); i++) {
 				ImGui::Checkbox(cShader1->m_params->boolParams[i].name.c_str(), &cShader1->m_params->boolParams[i].value);
-				cShader1->setBoolUniform(cShader1->m_params->boolParams[i].shaderlocation, cShader1->m_params->boolParams[i].value);
 			}
 
 			if(cShader1->m_params->uintParams.size())
 			   ImGui::TextColored(UI_YELLOW, "UNSIGNED INTEGER PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->uintParams.size(); i++) {
 				ImGui::InputScalar(cShader1->m_params->uintParams[i].name.c_str(), ImGuiDataType_U32, &cShader1->m_params->uintParams[i].value);
-				cShader1->setUIntUniform(cShader1->m_params->uintParams[i].shaderlocation, cShader1->m_params->uintParams[i].value);
 			}
 
 			if(cShader1->m_params->vec3Params.size())
 			    ImGui::TextColored(UI_YELLOW, "FLOAT VECTOR-3 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->vec3Params.size(); i++) {
 				ImGui::InputFloat3(cShader1->m_params->vec3Params[i].name.c_str(), &cShader1->m_params->vec3Params[i].value[0], "%.3f");
-				cShader1->setVec3Uniform(cShader1->m_params->vec3Params[i].shaderlocation, cShader1->m_params->vec3Params[i].value);
 			}
 
 			if(cShader1->m_params->vec2Params.size())
 			    ImGui::TextColored(UI_YELLOW, "FLOAT VECTOR-2 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->vec2Params.size(); i++) {
 				ImGui::InputFloat2(cShader1->m_params->vec2Params[i].name.c_str(), &cShader1->m_params->vec2Params[i].value[0], "%.3f");
-				cShader1->setVec2Uniform(cShader1->m_params->vec2Params[i].shaderlocation, cShader1->m_params->vec2Params[i].value);
 			}
 			
 			if(cShader1->m_params->vec4Params.size())
 			    ImGui::TextColored(UI_YELLOW, "FLOAT VECTOR-4 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->vec4Params.size(); i++) {
 				ImGui::InputFloat4(cShader1->m_params->vec4Params[i].name.c_str(), &cShader1->m_params->vec4Params[i].value[0], "%.3f");
-				cShader1->setVec4Uniform(cShader1->m_params->vec4Params[i].shaderlocation, cShader1->m_params->vec4Params[i].value);
 			}
 
 			if(cShader1->m_params->ivec3Params.size())
 			    ImGui::TextColored(UI_YELLOW, "INTEGER VECTOR-3 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->ivec3Params.size(); i++) {
 				ImGui::InputInt3(cShader1->m_params->ivec3Params[i].name.c_str(), &cShader1->m_params->ivec3Params[i].value[0]);
-				cShader1->setIVec3Uniform(cShader1->m_params->ivec3Params[i].shaderlocation, cShader1->m_params->ivec3Params[i].value);
 			}
 
 			if(cShader1->m_params->ivec2Params.size())
 			    ImGui::TextColored(UI_YELLOW, "INTEGER VECTOR-2 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->ivec2Params.size(); i++) {
 				ImGui::InputInt2(cShader1->m_params->ivec2Params[i].name.c_str(), &cShader1->m_params->ivec2Params[i].value[0]);
-				cShader1->setIVec2Uniform(cShader1->m_params->ivec2Params[i].shaderlocation, cShader1->m_params->ivec2Params[i].value);
 			}
 
 			if(cShader1->m_params->ivec4Params.size())
 			    ImGui::TextColored(UI_YELLOW, "INTEGER VECTOR-4 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->ivec4Params.size(); i++) {
 				ImGui::InputInt4(cShader1->m_params->ivec4Params[i].name.c_str(), &cShader1->m_params->ivec4Params[i].value[0]);
-				cShader1->setIVec4Uniform(cShader1->m_params->ivec4Params[i].shaderlocation, cShader1->m_params->ivec4Params[i].value);
 			}
 
 			if(cShader1->m_params->uvec3Params.size())
 			    ImGui::TextColored(UI_YELLOW, "UNSIGNED INTEGER VECTOR-3 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->uvec3Params.size(); i++) {
 				ImGui::InputScalarN(cShader1->m_params->uvec3Params[i].name.c_str(), ImGuiDataType_U32, &cShader1->m_params->uvec3Params[i].value[0], 3);
-				cShader1->setUIVec3Uniform(cShader1->m_params->uvec3Params[i].shaderlocation, cShader1->m_params->uvec3Params[i].value);
 			}
 
 			if(cShader1->m_params->uvec2Params.size())
 			    ImGui::TextColored(UI_YELLOW, "UNSIGNED INTEGER VECTOR-2 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->uvec2Params.size(); i++) {
 				ImGui::InputScalarN(cShader1->m_params->uvec2Params[i].name.c_str(), ImGuiDataType_U32, &cShader1->m_params->uvec2Params[i].value[0], 2);
-				cShader1->setUIVec2Uniform(cShader1->m_params->uvec2Params[i].shaderlocation, cShader1->m_params->uvec2Params[i].value);
 			}
 
 			if(cShader1->m_params->uvec4Params.size())
 			    ImGui::TextColored(UI_YELLOW, "UNSIGNED INTEGER VECTOR-4 PARAMETERS");
 			for (int i = 0; i < cShader1->m_params->uvec4Params.size(); i++) {
 				ImGui::InputScalarN(cShader1->m_params->uvec4Params[i].name.c_str(), ImGuiDataType_U32, &cShader1->m_params->uvec4Params[i].value[0], 4);
-				cShader1->setUIVec4Uniform(cShader1->m_params->uvec4Params[i].shaderlocation, cShader1->m_params->uvec4Params[i].value);
 			}
 
 			ImGui::TreePop();
@@ -393,6 +319,15 @@ namespace ARB {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
+	}
+
+	void Engine::SetVSync() {
+		if (ImGui::Button("V-Sync", UI_BUTTON_SIZE)) {
+			vsync = (vsync) ? false : true;
+			appWindow->setVsync(vsync);
+		}
+		ImGui::SameLine();
+		ImGui::TextColored(UI_WHITE, ((vsync) ? "ON" : "OFF"));
 	}
 
 	void Engine::SetupTexture(unsigned int width, unsigned int height) {

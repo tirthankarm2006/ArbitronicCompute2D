@@ -82,34 +82,39 @@ namespace ARB {
 		glm::ivec4 value;
 	};
 
-	typedef struct {
+	struct UniformUvec3 {
+		UniformUvec3() : name("_UVEC3_"), shaderlocation(0), value(glm::uvec3(0, 0, 0)) {}
 		std::string name;
 		unsigned int shaderlocation;
 		glm::uvec3 value;
-	}UniformUvec3;
+	};
 
-	typedef struct {
+	struct UniformUvec2 {
+		UniformUvec2() : name("_UVEC2_"), shaderlocation(0), value(glm::uvec2(0, 0)) {}
 		std::string name;
 		unsigned int shaderlocation;
 		glm::uvec2 value;
-	}UniformUvec2;
+	};
 
-	typedef struct {
+	struct UniformUvec4 {
+		UniformUvec4() : name("_UVEC4_"), shaderlocation(0), value(glm::uvec4(0, 0, 0, 1)) {}
 		std::string name;
 		unsigned int shaderlocation;
 		glm::uvec4 value;
-	}UniformUvec4;
+	};
 
-	typedef struct {
+	struct UniformMatrix3 {
+		UniformMatrix3() : name("_MAT3_"), shaderlocation(0), value(glm::mat3(1.0)) {}
 		std::string name;
 		unsigned int shaderlocation;
 		glm::mat3 value;
-	}UniformMatrix3;
+	};
 
-	typedef struct {
+	struct UniformMatrix4 {
+		UniformMatrix4() : name("_MAT4_"), shaderlocation(0), value(glm::mat4(1.0)) {}
 		std::string name;
 		unsigned int shaderlocation;
 		glm::mat4 value;
-	}UniformMatrix4;
+	};
 }
 #endif //  _ARB_OPENGLSHADERUNIFORMS_H_
